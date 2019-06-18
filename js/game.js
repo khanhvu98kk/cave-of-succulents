@@ -44,6 +44,8 @@ function jPixLoc (j) {return HEIGHT / ROWS * j;}
 
 function isValid (i, j) {return i >= 0 && i < COLS && j >= 0 && j < ROWS;}
 
+function randomInt (top) {return Math.floor(Math.random() * top);}
+
 function arrayRemove(arr, value) {
     return arr.filter(function(ele){
         return ele != value;
@@ -67,7 +69,7 @@ function initAdjacency () {
             neighbors.push(two2one(i+1, j));
         if (j > 0)
             neighbors.push(two2one(i, j-1));
-        if (j < COLS-1)
+        if (j < ROWS-1)
             neighbors.push(two2one(i, j+1));
         
         adjacency.push(neighbors);
@@ -78,13 +80,18 @@ function removeAdjacency (i, j, k, l) {
     if (!isValid(i, j) || !isValid(k, l))
         return;
 
+    console.log("removeAdj: " + i + " " + j + " " + k + " " + l);
+
     var neighbors = adjacency[two2one(i, j)];
+    console.log(neighbors);
     adjacency[two2one(i, j)] = arrayRemove(neighbors, two2one(k, l));
 
     neighbors = adjacency[two2one(k, l)];
+    console.log(neighbors);
     adjacency[two2one(k, l)] = arrayRemove(neighbors, two2one(i, j));
 }
 
+// check if two cells are neighbors
 function isNeighbor (i, j, k, l) {
     if (!isValid(i, j) || !isValid(k, l))
         return false;
@@ -110,13 +117,13 @@ function createWall (i, j, orient='tall') {
         var iLoc = iPixLoc(i + 1);
         var jLoc = jPixLoc(j + 0.5);
         walls.create(iLoc, jLoc, 'tall').setScale(0.115).refreshBody();
-        removeAdjacency(i, j, i+1, j);
+        // removeAdjacency(i, j, i+1, j);
     }
     else if (orient=='flat') {
         var iLoc = iPixLoc(i + 0.5);
         var jLoc = jPixLoc(j + 1);
         walls.create(iLoc, jLoc, 'flat').setScale(0.115).refreshBody();
-        removeAdjacency(i, j, i, j+1);
+        // removeAdjacency(i, j, i, j+1);
     }
 }
 
@@ -125,7 +132,55 @@ function divide (startX, startY, width, height) {
     if (width < 2 || height < 2)
         return;
 
+    var horiz = false;
+    if (width < height)
+        horiz = true;
     
+    var wall = 0; // dist of wall from start
+    var gap = 0; // dist of gap from start
+
+    // calculate random wall and gap location
+    if (horiz) {
+        wall = randomInt(height-2);
+        gap = randomInt(width);
+    }
+    else {
+        wall = randomInt(width-2);
+        gap = randomInt(height);
+    }
+
+    // create wall 
+    if (horiz) {
+        var wy = startY + wall; // wall y
+        var gx = startX + gap; // gap x
+
+        for (var x = startX; x < startX + width; x++) {
+            if (x == gx)
+                continue;
+            createWall(x, wy, 'flat');
+        }
+    }
+    else {
+        var wx = startX + wall; // wall x
+        var gy = startY + gap; // gap y
+
+        for (var y = startY; y < startY + height; y++) {
+            if (y == gy)
+                continue;
+            createWall(wx, y, 'tall');
+        }
+    }
+
+    // recurse
+    if (horiz) {
+        divide(startX, startY, width, wall + 1);
+        divide(startX, startY + wall + 1, width, height - wall - 1);
+    }
+    else {
+        divide(startX, startY, wall + 1, height);
+        divide(startX + wall + 1, startY, width - wall - 1, height);
+    }
+
 }
 
 // -------------------------------- END -------------------------------------
@@ -167,6 +222,8 @@ function create ()
     createWall(5, 5, 'tall');
     createWall(5, 4, 'flat');
     createWall(4, 5, 'tall');
+
+    divide(0, 0, COLS, ROWS);
     
     // walls.create(600, 400, 'flat');
     // walls.create(50, 250, 'flat');
