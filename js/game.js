@@ -42,11 +42,17 @@ function iPixLoc (i) {return WIDTH / COLS * i;}
 
 function jPixLoc (j) {return HEIGHT / ROWS * j;}
 
+function isValid (i, j) {return i >= 0 && i < COLS && j >= 0 && j < ROWS;}
+
 function arrayRemove(arr, value) {
     return arr.filter(function(ele){
         return ele != value;
     });
 }
+
+// Adjacency matrix stores each cell as an integer
+// Each cell is an index in the array and has a neighbors array
+// The neighbors array for a given cell contains its neighbors (as integers)
 
 function initAdjacency () {
     adjacency = []
@@ -70,6 +76,9 @@ function initAdjacency () {
 }
 
 function removeAdjacency (i, j, k, l) {
+    if (!isValid(i, j) || !isValid(k, l))
+        return;
+
     var neighbors = adjacency[two2one(i, j)];
     adjacency[two2one(i, j)] = arrayRemove(neighbors, two2one(k, l));
 
