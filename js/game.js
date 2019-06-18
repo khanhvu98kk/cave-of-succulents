@@ -1,10 +1,16 @@
+// Game constants
 var WIDTH = 900;
 var HEIGHT = 900;
 var COLS = 15;
 var ROWS = 15;
+var WALL_SCALE = 0.105;
+
+var SPOTLIGHT_SIZE = 200;
+var SPOTLIGHT_ORIG = 213;
+var IS_DARK = true;
+
 var BABY_VEL = 150;
 var MONSTER_VEL = 125;
-var WALL_SCALE = 0.105;
 
 var config = {
     type: Phaser.AUTO,
@@ -31,18 +37,18 @@ var adjacency;
 var star; 
 var bomb;
 
+var blocker;
+var spotlight;
+
 var game = new Phaser.Game(config);
 
 // -------------------------- Helper Functions ------------------------------
 
 function two2one (i, j) {return (j*COLS) + i;}
-
 function one2i (one) {return Math.floor(one / COLS);}
-
 function one2j (one) {return one % ROWS;}
 
 function iPixLoc (i) {return WIDTH / COLS * i;}
-
 function jPixLoc (j) {return HEIGHT / ROWS * j;}
 
 function isValid (i, j) {return i >= 0 && i < COLS && j >= 0 && j < ROWS;}
@@ -191,6 +197,7 @@ function divide (startX, startY, width, height) {
 function preload ()
 {
     this.load.image('sky', 'assets/sky.png');
+    this.load.image('mask', 'assets/mask.png');
     this.load.image('flat', 'assets/flat.png');
     this.load.image('tall', 'assets/tall.png');
     this.load.image('box', 'assets/box.png');
@@ -233,6 +240,19 @@ function create ()
     player.setCollideWorldBounds(true);
     monster = this.physics.add.sprite(iPixLoc(5.5), jPixLoc(5.5), 'wolf');
     monster.setCollideWorldBounds(true);
+
+    blocker = this.add.image(WIDTH/2, HEIGHT/2, 'box').setScale(Math.max(WIDTH, HEIGHT)/ 400);
+
+    spotlight = this.make.sprite({
+        x: 400,
+        y: 300,
+        key: 'mask',
+        add: false
+    }).setScale(SPOTLIGHT_SIZE/SPOTLIGHT_ORIG);
+
+    blocker.mask = new Phaser.Display.Masks.BitmapMask(this, spotlight);
+    blocker.mask.invertAlpha = true;
+    blocker.visible = IS_DARK;
 
 
     // Player's movements
@@ -381,6 +401,9 @@ function update ()
   }
   // --------------------------  END ------------------------------
 
+  // Move the Spotlight
+  spotlight.x = player.x;
+  spotlight.y = player.y;
 
   // handling collision
   // console.log(player.x, player.y);
