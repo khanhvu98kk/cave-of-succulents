@@ -33,7 +33,7 @@ var game = new Phaser.Game(config);
 
 // -------------------------- Helper Functions ------------------------------
 
-function two2one (i, j) {return (i*COLS) + j;}
+function two2one (i, j) {return (j*COLS) + i;}
 
 function one2i (one) {return Math.floor(one / COLS);}
 
@@ -84,11 +84,11 @@ function removeAdjacency (i, j, k, l) {
     console.log("removeAdj: " + i + " " + j + " " + k + " " + l);
 
     var neighbors = adjacency[two2one(i, j)];
-    console.log(neighbors);
+    // console.log(neighbors);
     adjacency[two2one(i, j)] = arrayRemove(neighbors, two2one(k, l));
 
     neighbors = adjacency[two2one(k, l)];
-    console.log(neighbors);
+    // console.log(neighbors);
     adjacency[two2one(k, l)] = arrayRemove(neighbors, two2one(i, j));
 }
 
@@ -118,13 +118,13 @@ function createWall (i, j, orient='tall') {
         var iLoc = iPixLoc(i + 1);
         var jLoc = jPixLoc(j + 0.5);
         walls.create(iLoc, jLoc, 'tall').setScale(WALL_SCALE).refreshBody();
-        // removeAdjacency(i, j, i+1, j);
+        removeAdjacency(i, j, i+1, j);
     }
     else if (orient=='flat') {
         var iLoc = iPixLoc(i + 0.5);
         var jLoc = jPixLoc(j + 1);
         walls.create(iLoc, jLoc, 'flat').setScale(WALL_SCALE).refreshBody();
-        // removeAdjacency(i, j, i, j+1);
+        removeAdjacency(i, j, i, j+1);
     }
 }
 
