@@ -28,6 +28,8 @@ var player;
 var walls;
 var cursors;
 var adjacency;
+var star; 
+var bomb;
 
 var game = new Phaser.Game(config);
 
@@ -81,7 +83,7 @@ function removeAdjacency (i, j, k, l) {
     if (!isValid(i, j) || !isValid(k, l))
         return;
 
-    console.log("removeAdj: " + i + " " + j + " " + k + " " + l);
+    // console.log("removeAdj: " + i + " " + j + " " + k + " " + l);
 
     var neighbors = adjacency[two2one(i, j)];
     // console.log(neighbors);
@@ -217,10 +219,18 @@ function create ()
 
     divide(0, 0, COLS, ROWS);
 
-    player = this.physics.add.sprite(WIDTH, HEIGHT, 'baby');
+    // randomly generate items
+    var randX = iPixLoc(randomInt(COLS)+0.5);
+    var randY = jPixLoc(randomInt(ROWS)+0.5);
+    star = this.physics.add.image(randX, randY, 'star').setScale(1.5);
 
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    bomb = this.physics.add.image(randX, randY, 'bomb').setScale(1.5);
+
+    // generate player and monster
+    player = this.physics.add.sprite(0, 0, 'baby');
     player.setCollideWorldBounds(true);
-
     monster = this.physics.add.sprite(iPixLoc(5.5), jPixLoc(5.5), 'wolf');
     monster.setCollideWorldBounds(true);
 
@@ -380,6 +390,18 @@ function update ()
 
       // TODO: actually end game!!!
       console.log("GAME OVER!");
+  }
+
+  if (Math.abs(player.x - star.x) < 20  && Math.abs(player.y - star.y) < 20) {
+
+    // TODO: actually use the item
+    console.log("SHINY!");
+  }
+
+  if (Math.abs(player.x - bomb.x) < 20  && Math.abs(player.y - bomb.y) < 20) {
+
+    // TODO: actually use the item
+    console.log("BOOM!");
   }
 
 }
