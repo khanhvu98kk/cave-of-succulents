@@ -26,27 +26,79 @@ var config = {
 var player;
 var walls;
 var cursors;
+var adjacency;
 
 var game = new Phaser.Game(config);
 
+// -------------------------- Helper Functions ------------------------------
+
+function two2one (i, j) {return (i*COLS) + j;}
+
+function one2i (one) {return Math.floor(one / COLS);}
+
+function one2j (one) {return one % ROWS;}
+
+function iPixLoc (i) {return WIDTH / COLS * i;}
+
+function jPixLoc (j) {return HEIGHT / ROWS * j;}
+
+function arrayRemove(arr, value) {
+    return arr.filter(function(ele){
+        return ele != value;
+    });
+}
+
+function initAdjacency () {
+    adjacency = []
+
+    for(var one = 0; one < ROWS*COLS; one++) {
+        var neighbors = [];
+        var i = one2i(one);
+        var j = one2j(one);
+
+        if (i > 0) 
+            neighbors.push(two2one(i-1, j));
+        if (i < COLS-1)
+            neighbors.push(two2one(i+1, j));
+        if (j > 0)
+            neighbors.push(two2one(i, j-1));
+        if (j < COLS-1)
+            neighbors.push(two2one(i, j+1));
+        
+        adjacency.push(neighbors);
+    }
+}
+
+function removeAdjacency (i, j, k, l) {
+    var neighbors = adjacency[two2one(i, j)];
+    adjacency[two2one(i, j)] = arrayRemove(neighbors, two2one(k, l));
+
+    neighbors = adjacency[two2one(k, l)];
+    adjacency[two2one(k, l)] = arrayRemove(neighbors, two2one(i, j));
+}
+
 function createBoxWall (walls, i, j) {
-    var iLoc = WIDTH / COLS * (i + 0.5);
-    var jLoc = HEIGHT / ROWS * (j + 0.5);
+    var iLoc = iPixLoc(i + 0.5);
+    var jLoc = jPixLoc(j + 0.5);
     walls.create(iLoc, jLoc, 'box').setScale(0.1).refreshBody();
 }
 
 function createWall (walls, i, j, orient='tall') {
     if (orient=='tall') {
-        var iLoc = WIDTH / COLS * (i + 1);
-        var jLoc = HEIGHT / ROWS * (j + 0.5);
+        var iLoc = iPixLoc(i + 1);
+        var jLoc = jPixLoc(j + 0.5);
         walls.create(iLoc, jLoc, 'tall').setScale(0.115).refreshBody();
+        removeAdjacency(i, j, i+1, j);
     }
     else if (orient=='flat') {
-        var iLoc = WIDTH / COLS * (i + 0.5);
-        var jLoc = HEIGHT / ROWS * (j + 1);
+        var iLoc = iPixLoc(i + 0.5);
+        var jLoc = jPixLoc(j + 1);
         walls.create(iLoc, jLoc, 'flat').setScale(0.115).refreshBody();
+        removeAdjacency(i, j, i, j+1);
     }
 }
+
+// -------------------------------- END -------------------------------------
 
 function preload ()
 {
@@ -67,6 +119,7 @@ function create ()
     // TODO: once the maze is done, add this back in for not walking through walls
 
     walls = this.physics.add.staticGroup();
+    initAdjacency();
 
     // walls.create(400, 568, 'flat').setScale(0.1).refreshBody();
     // walls.create(700, 568, 'tall').setScale(0.1).refreshBody();
@@ -78,6 +131,10 @@ function create ()
     // createWall(walls, 10, 10, 'flat');
     createWall(walls, 9, 10, 'tall');
     // createWall(walls, 10, 9, 'flat');
+
+    createWall(walls, 5, 5, 'tall');
+    createWall(walls, 5, 4, 'flat');
+    createWall(walls, 4, 5, 'tall');
     
     // walls.create(600, 400, 'flat');
     // walls.create(50, 250, 'flat');
@@ -87,7 +144,7 @@ function create ()
 
     player.setCollideWorldBounds(true);
 
-    monster = this.physics.add.sprite(100, 300, 'wolf');
+    monster = this.physics.add.sprite(iPixLoc(5.5), jPixLoc(5.5), 'wolf');
     monster.setCollideWorldBounds(true);
 
 
@@ -162,6 +219,7 @@ function create ()
     cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.add.collider(player, walls);
+    this.physics.add.collider(monster, walls);
 }
 
 function update ()
