@@ -264,8 +264,6 @@ function create ()
 
     randX = iPixLoc(randomInt(COLS)+0.5);
     randY = jPixLoc(randomInt(ROWS)+0.5);
-    randX = iPixLoc(1.5);
-    randY = jPixLoc(1.5);
     bomb = this.physics.add.image(randX, randY, 'bomb').setScale(1.5);
 
     // generate player and monster
