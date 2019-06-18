@@ -201,4 +201,15 @@ function update ()
   }
   // --------------------------  END ------------------------------
 
+
+  // handling collision
+  // console.log(player.x, player.y);
+  // console.log(monster.x, monster.y);
+  if (Math.abs(player.x - monster.x) < 20  &&
+      Math.abs(player.y - monster.y) < 20) {
+
+      // TODO: actually end game!!!
+      console.log("GAME OVER!");
+  }
+
 }
