@@ -53,7 +53,6 @@ function arrayRemove(arr, value) {
 // Adjacency matrix stores each cell as an integer
 // Each cell is an index in the array and has a neighbors array
 // The neighbors array for a given cell contains its neighbors (as integers)
-
 function initAdjacency () {
     adjacency = []
 
@@ -86,13 +85,27 @@ function removeAdjacency (i, j, k, l) {
     adjacency[two2one(k, l)] = arrayRemove(neighbors, two2one(i, j));
 }
 
-function createBoxWall (walls, i, j) {
+function isNeighbor (i, j, k, l) {
+    if (!isValid(i, j) || !isValid(k, l))
+        return false;
+
+    var neighbors = adjacency[two2one(i, j)];
+
+    for (var a = 0; a < neighbors.length; a++) {
+        var neighbor = neighbors[a];
+        if (two2one(k, l) == neighbor)
+            return true;
+    }
+    return false;
+}
+
+function createBoxWall (i, j) {
     var iLoc = iPixLoc(i + 0.5);
     var jLoc = jPixLoc(j + 0.5);
     walls.create(iLoc, jLoc, 'box').setScale(0.1).refreshBody();
 }
 
-function createWall (walls, i, j, orient='tall') {
+function createWall (i, j, orient='tall') {
     if (orient=='tall') {
         var iLoc = iPixLoc(i + 1);
         var jLoc = jPixLoc(j + 0.5);
@@ -105,6 +118,14 @@ function createWall (walls, i, j, orient='tall') {
         walls.create(iLoc, jLoc, 'flat').setScale(0.115).refreshBody();
         removeAdjacency(i, j, i, j+1);
     }
+}
+
+// Recursive divide function, splits area into two sections by creating a wall
+function divide (startX, startY, width, height) {
+    if (width < 2 || height < 2)
+        return;
+
+    
 }
 
 // -------------------------------- END -------------------------------------
@@ -129,21 +150,23 @@ function create ()
 
     walls = this.physics.add.staticGroup();
     initAdjacency();
+    console.log(isNeighbor(0, 1, 1, 1));
+    console.log(isNeighbor(3, 4, 5, 4));
 
     // walls.create(400, 568, 'flat').setScale(0.1).refreshBody();
     // walls.create(700, 568, 'tall').setScale(0.1).refreshBody();
     // walls.create(300, 368, 'box').setScale(0.1).refreshBody();
-    // createBoxWall(walls, 4, 6);
-    // createBoxWall(walls, 4, 7);
+    // createBoxWall(4, 6);
+    // createBoxWall(4, 7);
 
-    createWall(walls, 10, 10, 'tall');
-    // createWall(walls, 10, 10, 'flat');
-    createWall(walls, 9, 10, 'tall');
-    // createWall(walls, 10, 9, 'flat');
+    createWall(10, 10, 'tall');
+    // createWall(10, 10, 'flat');
+    createWall(9, 10, 'tall');
+    // createWall(10, 9, 'flat');
 
-    createWall(walls, 5, 5, 'tall');
-    createWall(walls, 5, 4, 'flat');
-    createWall(walls, 4, 5, 'tall');
+    createWall(5, 5, 'tall');
+    createWall(5, 4, 'flat');
+    createWall(4, 5, 'tall');
     
     // walls.create(600, 400, 'flat');
     // walls.create(50, 250, 'flat');
