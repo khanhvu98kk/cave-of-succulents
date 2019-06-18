@@ -1,10 +1,10 @@
 var WIDTH = 900;
-var HEIGHT = 600;
+var HEIGHT = 900;
 var COLS = 15;
-var ROWS = 10;
+var ROWS = 15;
 var BABY_VEL = 150;
 var MONSTER_VEL = 125;
-var WALL_SCALE = 0.106;
+var WALL_SCALE = 0.105;
 
 var config = {
     type: Phaser.AUTO,
@@ -200,7 +200,7 @@ function preload ()
 
 function create ()
 {
-    this.add.image(WIDTH/2, HEIGHT/2, 'sky').setScale(1.2);
+    this.add.image(WIDTH/2, HEIGHT/2, 'sky').setScale(1.5);
 
     // TODO: once the maze is done, add this back in for not walking through walls
 
