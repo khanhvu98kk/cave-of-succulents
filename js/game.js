@@ -1,9 +1,10 @@
 var WIDTH = 900;
-var HEIGHT = 675;
-var COLS = 20;
-var ROWS = 15;
+var HEIGHT = 600;
+var COLS = 15;
+var ROWS = 10;
 var BABY_VEL = 150;
 var MONSTER_VEL = 125;
+var WALL_SCALE = 0.106;
 
 var config = {
     type: Phaser.AUTO,
@@ -116,13 +117,13 @@ function createWall (i, j, orient='tall') {
     if (orient=='tall') {
         var iLoc = iPixLoc(i + 1);
         var jLoc = jPixLoc(j + 0.5);
-        walls.create(iLoc, jLoc, 'tall').setScale(0.115).refreshBody();
+        walls.create(iLoc, jLoc, 'tall').setScale(WALL_SCALE).refreshBody();
         // removeAdjacency(i, j, i+1, j);
     }
     else if (orient=='flat') {
         var iLoc = iPixLoc(i + 0.5);
         var jLoc = jPixLoc(j + 1);
-        walls.create(iLoc, jLoc, 'flat').setScale(0.115).refreshBody();
+        walls.create(iLoc, jLoc, 'flat').setScale(WALL_SCALE).refreshBody();
         // removeAdjacency(i, j, i, j+1);
     }
 }
@@ -214,20 +215,7 @@ function create ()
     // createBoxWall(4, 6);
     // createBoxWall(4, 7);
 
-    createWall(10, 10, 'tall');
-    // createWall(10, 10, 'flat');
-    createWall(9, 10, 'tall');
-    // createWall(10, 9, 'flat');
-
-    createWall(5, 5, 'tall');
-    createWall(5, 4, 'flat');
-    createWall(4, 5, 'tall');
-
     divide(0, 0, COLS, ROWS);
-    
-    // walls.create(600, 400, 'flat');
-    // walls.create(50, 250, 'flat');
-    // walls.create(750, 220, 'flat');
 
     player = this.physics.add.sprite(WIDTH, HEIGHT, 'baby');
 
