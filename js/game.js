@@ -3,11 +3,11 @@ var WIDTH = 900;
 var HEIGHT = 900;
 var COLS = 15;
 var ROWS = 15;
-var WALL_SCALE = 0.105;
+var WALL_SCALE = 0.104;
 
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
-var IS_DARK = true;
+var IS_DARK = false;
 
 var BABY_VEL = 150;
 var MONSTER_VEL = 125;
@@ -32,10 +32,13 @@ var config = {
 
 var player;
 var walls;
+var wallsDict = {};
 var cursors;
 var adjacency;
-var star; 
+var star;
+var starCount = 0;
 var bomb;
+var bombCount = 0;
 
 var blocker;
 var spotlight;
@@ -50,6 +53,8 @@ function one2j (one) {return one % ROWS;}
 
 function iPixLoc (i) {return WIDTH / COLS * i;}
 function jPixLoc (j) {return HEIGHT / ROWS * j;}
+function xPixInd (x) {return Math.floor(x / (WIDTH / COLS));}
+function yPixInd (y) {return Math.floor(y / (HEIGHT / ROWS));}
 
 function isValid (i, j) {return i >= 0 && i < COLS && j >= 0 && j < ROWS;}
 
@@ -66,6 +71,7 @@ function arrayRemove(arr, value) {
 // The neighbors array for a given cell contains its neighbors (as integers)
 function initAdjacency () {
     adjacency = []
+    wallsDict = []
 
     for(var one = 0; one < ROWS*COLS; one++) {
         var neighbors = [];
@@ -82,6 +88,7 @@ function initAdjacency () {
             neighbors.push(two2one(i, j+1));
         
         adjacency.push(neighbors);
+        wallsDict.push([]);
     }
 }
 
@@ -122,16 +129,19 @@ function createBoxWall (i, j) {
 }
 
 function createWall (i, j, orient='tall') {
+    
     if (orient=='tall') {
         var iLoc = iPixLoc(i + 1);
         var jLoc = jPixLoc(j + 0.5);
-        walls.create(iLoc, jLoc, 'tall').setScale(WALL_SCALE).refreshBody();
+        var newWall = walls.create(iLoc, jLoc, 'tall').setScale(WALL_SCALE).refreshBody();
+        wallsDict[two2one(i, j)].push(newWall);
         removeAdjacency(i, j, i+1, j);
     }
     else if (orient=='flat') {
         var iLoc = iPixLoc(i + 0.5);
         var jLoc = jPixLoc(j + 1);
-        walls.create(iLoc, jLoc, 'flat').setScale(WALL_SCALE).refreshBody();
+        var newWall = walls.create(iLoc, jLoc, 'flat').setScale(WALL_SCALE).refreshBody();
+        wallsDict[two2one(i, j)].push(newWall);
         removeAdjacency(i, j, i, j+1);
     }
 }
@@ -192,6 +202,26 @@ function divide (startX, startY, width, height) {
 
 }
 
+// destroy walls in a 3x3 area around the given center
+function blastWalls (i, j) {
+    for (var x = i - 1; x < i + 2; x++) {
+        for (var y = j - 1; y < j + 2; y++) {
+            if (!isValid(x, y))
+                continue;
+            
+            console.log("Blasting: " + x + " " + y);
+            
+            var thisWalls = wallsDict[two2one(x, y)];
+            console.log(thisWalls)
+            for (var w = 0; w < thisWalls.length; w++) {
+                var thisWall = thisWalls[w];
+                console.log(thisWall);
+                thisWall.destroy();
+            }
+        }
+    }
+}
+
 // -------------------------------- END -------------------------------------
 
 function preload ()
@@ -225,6 +255,7 @@ function create ()
     // createBoxWall(4, 7);
 
     divide(0, 0, COLS, ROWS);
+    console.log(wallsDict);
 
     // randomly generate items
     var randX = iPixLoc(randomInt(COLS)+0.5);
@@ -233,6 +264,8 @@ function create ()
 
     randX = iPixLoc(randomInt(COLS)+0.5);
     randY = jPixLoc(randomInt(ROWS)+0.5);
+    randX = iPixLoc(1.5);
+    randY = jPixLoc(1.5);
     bomb = this.physics.add.image(randX, randY, 'bomb').setScale(1.5);
 
     // generate player and monster
@@ -408,23 +441,45 @@ function update ()
   // handling collision
   // console.log(player.x, player.y);
   // console.log(monster.x, monster.y);
-  if (Math.abs(player.x - monster.x) < 20  &&
-      Math.abs(player.y - monster.y) < 20) {
+    if (Math.abs(player.x - monster.x) < 20  &&
+        Math.abs(player.y - monster.y) < 20) {
 
-      // TODO: actually end game!!!
-      console.log("GAME OVER!");
-  }
+        // TODO: actually end game!!!
+        console.log("GAME OVER!");
+    }
 
-  if (Math.abs(player.x - star.x) < 20  && Math.abs(player.y - star.y) < 20) {
+    if (Math.abs(player.x - star.x) < 20  && Math.abs(player.y - star.y) < 20) {
+        // TODO: actually use the item
+        // console.log("SHINY!");
+        
+        if(starCount > 5 && star.visible) {
+            star.visible = false;
+            console.log("SHINY!");
 
-    // TODO: actually use the item
-    console.log("SHINY!");
-  }
+            spotlight = spotlight.setScale(1.5)
+        }
+        else {
+            starCount++;
+        }
+    }
 
-  if (Math.abs(player.x - bomb.x) < 20  && Math.abs(player.y - bomb.y) < 20) {
+    if (Math.abs(player.x - bomb.x) < 20  && Math.abs(player.y - bomb.y) < 20) {
+        // TODO: actually use the item
+        // console.log("BOOM!");
 
-    // TODO: actually use the item
-    console.log("BOOM!");
-  }
+        if(bombCount > 5 && bomb.visible) {
+            bomb.visible = false;
+            console.log("BOOM!");
+
+            var i = xPixInd(bomb.x);
+            var j = yPixInd(bomb.y);
+
+            blastWalls(i, j);
+        }
+        else {
+            bombCount++;
+        }
+
+    }
 
 }
