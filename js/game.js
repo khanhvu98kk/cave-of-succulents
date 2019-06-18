@@ -3,7 +3,7 @@ var HEIGHT = 675;
 var COLS = 20;
 var ROWS = 15;
 var BABY_VEL = 150;
-var MONSTER_VEL = 150;
+var MONSTER_VEL = 125;
 
 var config = {
     type: Phaser.AUTO,
@@ -87,7 +87,7 @@ function create ()
 
     player.setCollideWorldBounds(true);
 
-    monster = this.physics.add.sprite(100, 300, 'dude');
+    monster = this.physics.add.sprite(100, 300, 'wolf');
     monster.setCollideWorldBounds(true);
 
 
