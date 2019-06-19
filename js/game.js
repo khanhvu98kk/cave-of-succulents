@@ -25,6 +25,7 @@ var star;
 var starCount = 0;
 var bomb;
 var bombCount = 0;
+var succ3, succ4, succ5, succ6, succ7, succ8, succ9, succ10, succ11, succ12;
 
 var blocker;
 var spotlight;
@@ -247,6 +248,10 @@ function resetAll () {
 // -------------------------------- START -------------------------------------
 var start = new Phaser.Scene('start');
 var button;
+var timer = 0;
+var succ1, succ2;
+var yDown = HEIGHT * 2/3;
+var yUp = HEIGHT * 1.8/3
 
 start.preload = function () {
     this.load.image('start', 'assets/start.png');
@@ -261,12 +266,16 @@ start.create = function () {
     start.cameras.main.setBackgroundColor('#000000')
     // this.add.image(WIDTH/2, HEIGHT/3, 'gameover').setScale(0.5);
     // this.scene.bringToTop('stop');
-    this.add.image(WIDTH/4, HEIGHT * 2/3, 'succ1').setScale(0.5);
-    this.add.image(WIDTH * 3/4, HEIGHT * 2/3, 'succ2').setScale(0.5);
+    succ1 = this.add.image(WIDTH/4, HEIGHT * 2/3, 'succ1').setScale(0.5);
+    succ2 = this.add.image(WIDTH * 3/4, HEIGHT * 2/3, 'succ2').setScale(0.5);
     this.add.image(WIDTH/2, HEIGHT/3 - 50, 'logo1').setScale(0.75);
     this.add.image(WIDTH/2, HEIGHT/3 + 80, 'logo2').setScale(0.75);
     button = this.add.image(WIDTH/2, HEIGHT * 2/3, 'start').setScale(0.5);
     button.setInteractive();
+
+    // this.physics.enable(image, Phaser.Physics.ARCADE);
+    // image.body.velocity.x=150;
+    // console.log(succ1);
 };
 
 start.update = function() {
@@ -276,6 +285,17 @@ start.update = function() {
           this.scene.resume('play');
           this.scene.stop('start');
         });
+    if (timer % 20 == 0) {
+        if ((timer/20) % 2 == 0) {
+            succ1.y = yUp;
+            succ2.y = yDown;
+        }
+        else {
+            succ1.y = yDown;
+            succ2.y = yUp;
+        }
+    }
+    timer++;
 }
 // -------------------------- Start Scene ------------------------------
 // -------------------------------- END -------------------------------------
@@ -309,7 +329,7 @@ stop.update = function() {
     button.on('pointerdown', () => {
           // console.log('pointerover');
           window.location.reload();
-          // this.scene.start('start');
+          // this.scene.resume('start');
           // this.scene.pause('stop');
         });
 }
@@ -341,12 +361,25 @@ play.preload = function()
     this.load.image('succ4', 'assets/succ4.png');
     this.load.image('succ5', 'assets/succ5.png');
     this.load.image('succ6', 'assets/succ6.png');
+    this.load.image('succ7', 'assets/succ7.png');
+    this.load.image('succ8', 'assets/succ8.png');
+    this.load.image('succ9', 'assets/succ9.png');
+    this.load.image('succ10', 'assets/succ10.png');
+    this.load.image('succ11', 'assets/succ11.png');
+    this.load.image('succ12', 'assets/succ12.png');
     this.load.spritesheet('baby', 'assets/baby.png', { frameWidth: 32.5, frameHeight: 38 });
     this.load.spritesheet('wolf', 'assets/wolf.png', { frameWidth: 48, frameHeight: 35 });
 }
 
 play.create = function()
 {
+    // function addItem(item, name, scale) {              // doesn't work! Can't automate the adding of items?
+    //   console.log(item);
+    //   var randX = iPixLoc(randomInt(COLS)+0.5);
+    //   var randY = jPixLoc(randomInt(ROWS)+0.5);
+    //   item = this.physics.add.image(randX, randY, name).setScale(scale);
+    // }
+
     var map = this.make.tilemap({key: 'map'});                  // desert background
     var tileset = map.addTilesetImage("Desert", "tiles");
     var layer = map.createStaticLayer('Ground', tileset, 0, 0);
@@ -367,7 +400,9 @@ play.create = function()
     divide(0, 0, COLS, ROWS);
     // console.log(wallsList);
 
-    // randomly generate items
+    // ------------------adding randomly generated items ---------------------
+    // --------------------------- START ----------------------------------
+
     var randX = iPixLoc(randomInt(COLS)+0.5);
     var randY = jPixLoc(randomInt(ROWS)+0.5);
     star = this.physics.add.image(randX, randY, 'star').setScale(1.5);
@@ -375,14 +410,6 @@ play.create = function()
     randX = iPixLoc(randomInt(COLS)+0.5);
     randY = jPixLoc(randomInt(ROWS)+0.5);
     bomb = this.physics.add.image(randX, randY, 'bomb').setScale(1.5);
-
-    // randX = iPixLoc(randomInt(COLS)+0.5);
-    // randY = jPixLoc(randomInt(ROWS)+0.5);
-    // succ1 = this.physics.add.image(randX, randY, 'succ1').setScale(0.3);
-    //
-    // randX = iPixLoc(randomInt(COLS)+0.5);
-    // randY = jPixLoc(randomInt(ROWS)+0.5);
-    // succ2 = this.physics.add.image(randX, randY, 'succ2').setScale(0.3);
 
     randX = iPixLoc(randomInt(COLS)+0.5);
     randY = jPixLoc(randomInt(ROWS)+0.5);
@@ -400,11 +427,40 @@ play.create = function()
     randY = jPixLoc(randomInt(ROWS)+0.5);
     succ6 = this.physics.add.image(randX, randY, 'succ6').setScale(0.2);
 
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    succ7 = this.physics.add.image(randX, randY, 'succ7').setScale(1);
+
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    succ8 = this.physics.add.image(randX, randY, 'succ8').setScale(1);
+
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    succ9 = this.physics.add.image(randX, randY, 'succ9').setScale(1);
+
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    succ10 = this.physics.add.image(randX, randY, 'succ10').setScale(1);
+
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    succ11 = this.physics.add.image(randX, randY, 'succ11').setScale(1);
+
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    succ12 = this.physics.add.image(randX, randY, 'succ12').setScale(1);
+    // ------------------adding randomly generated items ---------------------
+    // --------------------------- START ----------------------------------
+
+
+
     // generate player and monster
     player = this.physics.add.sprite(iPixLoc(0.5), jPixLoc(0.5), 'baby');
     player.setCollideWorldBounds(true);
     monster = this.physics.add.sprite(iPixLoc(5.5), jPixLoc(5.5), 'wolf');
     monster.setCollideWorldBounds(true);
+
 
     blocker = this.add.image(WIDTH/2, HEIGHT/2, 'box').setScale(Math.max(WIDTH, HEIGHT)/ 400);
 
@@ -582,10 +638,10 @@ play.update = function()
 
         // TODO: actually end game!!!
         console.log("GAME OVER!");
-        // this.scene.start('stop');
-        // this.scene.bringToTop('stop');
-        // this.scene.pause('play');
         resetAll();
+        this.scene.start('stop');
+        this.scene.bringToTop('stop');
+        this.scene.pause('play');
     }
 
     if (Math.abs(player.x - star.x) < 20  && Math.abs(player.y - star.y) < 20) {
