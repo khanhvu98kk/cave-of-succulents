@@ -11,7 +11,7 @@ var WALL_SCALE = 0.22;
 
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
-var IS_DARK = false;
+var IS_DARK = true;
 
 var BABY_VEL = 150;
 var MONSTER_VEL = 100;
@@ -416,7 +416,7 @@ play.preload = function()
     this.load.image('mask', 'assets/mask.png');
     this.load.image('flat', 'assets/flat3.png');
     this.load.image('tall', 'assets/tall3.png');
-    this.load.image('box', 'assets/box.png');
+    this.load.image('blocker', 'assets/blocker.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('succ1', 'assets/succ1.png');
@@ -523,7 +523,7 @@ play.create = function()
     initTarget(monster, monsterTarget);
 
 
-    blocker = this.add.image((COLS * CELL_SIZE)/2, HEIGHT/2, 'box').setScale((COLS*CELL_SIZE)/ 400);
+    blocker = this.add.image((COLS * CELL_SIZE)/2 - WALL_WIDTH, HEIGHT-(COLS * CELL_SIZE)/2 - WALL_WIDTH, 'blocker').setScale((COLS*CELL_SIZE)/ 450);
 
     spotlight = this.make.sprite({
         x: iPixLoc(0),
