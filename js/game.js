@@ -577,29 +577,30 @@ play.create = function()
 
 play.update = function() {
     // monster's movements
+    var TOLERANCE = 5;
     var currX = monster.x;
     var currY = monster.y;
     var targetX = monsterTarget.x;
     var targetY = monsterTarget.y;
-    if (dir <= 25) {    // up
+    if (currY > targetY + TOLERANCE) {    // up
         monster.setVelocityY(-MONSTER_VEL);
         monster.setVelocityX(0);
 
         monster.anims.play('w', true);
     }
-    else if (dir <= 50) {   // down
+    else if (currY < targetY - TOLERANCE) {   // down
         monster.setVelocityY(MONSTER_VEL);
         monster.setVelocityX(0);
 
         monster.anims.play('s', true);
     }
-    else if (dir <= 75) {   // left
+    else if (currX > targetX + TOLERANCE) {   // left
         monster.setVelocityX(-MONSTER_VEL);
         monster.setVelocityY(0);
 
         monster.anims.play('a', true);
     }
-    else {            // right
+    else if (currX < targetX - TOLERANCE) {    // right
         monster.setVelocityX(MONSTER_VEL);
         monster.setVelocityY(0);
 
