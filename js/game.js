@@ -1,14 +1,15 @@
 //---------------------------- Game constants -------------------------------
 //---------------------------- START -------------------------------
-var WIDTH = 900;
-var HEIGHT = 900;
-var COLS = 15;
+var COLS = 20;
 var ROWS = 15;
+var HALL_SIZE = 64;
+var WIDTH = COLS*HALL_SIZE;
+var HEIGHT = ROWS*HALL_SIZE;
 var WALL_SCALE = 0.104;
 
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
-var IS_DARK = true;
+var IS_DARK = false;
 
 var BABY_VEL = 150;
 var MONSTER_VEL = 125;
