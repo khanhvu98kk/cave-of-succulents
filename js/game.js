@@ -402,7 +402,7 @@ var monsterTarget = [];
 play.preload = function()
 {
     this.load.image('tiles', 'assets/desert_tiles.png');
-    this.load.tilemapTiledJSON('map', 'assets/desert.json');
+    this.load.tilemapTiledJSON('map', 'assets/desert-score.json');
 
     this.load.image('sky', 'assets/sky.png');
     this.load.image('mask', 'assets/mask.png');
@@ -423,6 +423,7 @@ play.preload = function()
     this.load.image('succ10', 'assets/succ10.png');
     this.load.image('succ11', 'assets/succ11.png');
     this.load.image('succ12', 'assets/succ12.png');
+    this.load.image('succ13', 'assets/succ13.png');
     this.load.spritesheet('baby', 'assets/baby.png', { frameWidth: 32.5, frameHeight: 38 });
     this.load.spritesheet('wolf', 'assets/wolf.png', { frameWidth: 48, frameHeight: 35 });
 }
@@ -454,7 +455,7 @@ play.create = function()
     // createBoxWall(4, 7);
 
     divide(0, 0, COLS, ROWS);
-    
+
     // console.log(wallsList);
 
     // randomly generate items
@@ -754,3 +755,20 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
+
+
+// var config1 = {
+//     type: Phaser.AUTO,
+//     width: WIDTH,
+//     height: HEIGHT / 5,
+//     physics: {
+//         default: 'arcade',
+//         arcade: {
+//             gravity: { y: 0 },
+//             debug: false
+//         }
+//     },
+//     scene: [ stop ]
+// };
+//
+// var board = new Phaser.Game(config1);
