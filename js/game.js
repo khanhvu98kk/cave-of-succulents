@@ -335,6 +335,12 @@ play.preload = function()
     this.load.image('box', 'assets/box.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
+    this.load.image('succ1', 'assets/succ1.png');
+    this.load.image('succ2', 'assets/succ2.png');
+    this.load.image('succ3', 'assets/succ3.png');
+    this.load.image('succ4', 'assets/succ4.png');
+    this.load.image('succ5', 'assets/succ5.png');
+    this.load.image('succ6', 'assets/succ6.png');
     this.load.spritesheet('baby', 'assets/baby.png', { frameWidth: 32.5, frameHeight: 38 });
     this.load.spritesheet('wolf', 'assets/wolf.png', { frameWidth: 48, frameHeight: 35 });
 }
@@ -369,6 +375,30 @@ play.create = function()
     randX = iPixLoc(randomInt(COLS)+0.5);
     randY = jPixLoc(randomInt(ROWS)+0.5);
     bomb = this.physics.add.image(randX, randY, 'bomb').setScale(1.5);
+
+    // randX = iPixLoc(randomInt(COLS)+0.5);
+    // randY = jPixLoc(randomInt(ROWS)+0.5);
+    // succ1 = this.physics.add.image(randX, randY, 'succ1').setScale(0.3);
+    //
+    // randX = iPixLoc(randomInt(COLS)+0.5);
+    // randY = jPixLoc(randomInt(ROWS)+0.5);
+    // succ2 = this.physics.add.image(randX, randY, 'succ2').setScale(0.3);
+
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    succ3 = this.physics.add.image(randX, randY, 'succ3').setScale(0.07);
+
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    succ4 = this.physics.add.image(randX, randY, 'succ4').setScale(0.1);
+
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    succ5 = this.physics.add.image(randX, randY, 'succ5').setScale(0.2);
+
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    succ6 = this.physics.add.image(randX, randY, 'succ6').setScale(0.2);
 
     // generate player and monster
     player = this.physics.add.sprite(iPixLoc(0.5), jPixLoc(0.5), 'baby');
