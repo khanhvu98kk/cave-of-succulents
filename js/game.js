@@ -7,7 +7,7 @@ var WALL_SCALE = 0.104;
 
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
-var IS_DARK = false;
+var IS_DARK = true;
 
 var BABY_VEL = 150;
 var MONSTER_VEL = 125;
