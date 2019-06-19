@@ -138,6 +138,13 @@ function createWall (i, j, orient='tall') {
     }
 }
 
+function createLimit () {
+    for (var j = 0; j < ROWS-1; j++)
+        createWall(COLS-1, j, 'tall');
+    for (var i = 0; i < COLS-1; i++)
+        createWall(i, ROWS-1, 'flat');
+}
+
 // Recursive divide function, splits area into two sections by creating a wall
 function divide (startX, startY, width, height) {
     if (width < 2 || height < 2)
@@ -220,6 +227,7 @@ function resetAll () {
     initAdjacency();
     walls.clear(destroyChild=true);
     divide(0, 0, COLS, ROWS);
+    createLimit();
 
     // reposition items and make visible
     var randX = iPixLoc(randomInt(COLS));
@@ -448,13 +456,9 @@ play.create = function()
     walls = this.physics.add.staticGroup();
     initAdjacency();
 
-    // walls.create(400, 568, 'flat').setScale(0.1).refreshBody();
-    // walls.create(700, 568, 'tall').setScale(0.1).refreshBody();
-    // walls.create(300, 368, 'box').setScale(0.1).refreshBody();
-    // createBoxWall(4, 6);
-    // createBoxWall(4, 7);
-
+    // create walls
     divide(0, 0, COLS, ROWS);
+    createLimit();
 
     // console.log(wallsList);
 
