@@ -364,7 +364,7 @@ var monsterTarget = [];
 play.preload = function()
 {
     this.load.image('tiles', 'assets/desert_tiles.png');
-    this.load.tilemapTiledJSON('map', 'assets/desert-hard.json');
+    this.load.tilemapTiledJSON('map', 'assets/desert.json');
 
     this.load.image('sky', 'assets/sky.png');
     this.load.image('mask', 'assets/mask.png');
