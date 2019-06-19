@@ -1,6 +1,6 @@
 //---------------------------- Game constants -------------------------------
 //---------------------------- START -------------------------------
-var COLS = 10;
+var COLS = 17;
 var ROWS = 10;
 var HALL_SIZE = 64;
 var WALL_WIDTH = 32;
@@ -390,7 +390,7 @@ var monsterTarget = [];
 play.preload = function()
 {
     this.load.image('tiles', 'assets/desert_tiles.png');
-    this.load.tilemapTiledJSON('map', 'assets/desert.json');
+    this.load.tilemapTiledJSON('map', 'assets/desert-score.json');
 
     this.load.image('sky', 'assets/sky.png');
     this.load.image('mask', 'assets/mask.png');
@@ -442,7 +442,7 @@ play.create = function()
     // createBoxWall(4, 7);
 
     divide(0, 0, COLS, ROWS);
-    
+
     // console.log(wallsList);
 
     // randomly generate items
@@ -746,3 +746,20 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
+
+
+// var config1 = {
+//     type: Phaser.AUTO,
+//     width: WIDTH,
+//     height: HEIGHT / 5,
+//     physics: {
+//         default: 'arcade',
+//         arcade: {
+//             gravity: { y: 0 },
+//             debug: false
+//         }
+//     },
+//     scene: [ stop ]
+// };
+//
+// var board = new Phaser.Game(config1);
