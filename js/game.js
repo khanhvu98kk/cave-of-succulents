@@ -9,7 +9,7 @@ var WALL_SCALE = 0.104;
 
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
-var IS_DARK = true;
+var IS_DARK = false;
 
 var BABY_VEL = 150;
 var MONSTER_VEL = 125;
@@ -37,10 +37,10 @@ function two2one (i, j) {return (j*COLS) + i;}
 function one2i (one) {return Math.floor(one / COLS);}
 function one2j (one) {return one % ROWS;}
 
-function iPixLoc (i) {return WIDTH / COLS * i;}
-function jPixLoc (j) {return HEIGHT / ROWS * j;}
-function xPixInd (x) {return Math.floor(x / (WIDTH / COLS));}
-function yPixInd (y) {return Math.floor(y / (HEIGHT / ROWS));}
+function iPixLoc (i) {return HALL_SIZE * i;}
+function jPixLoc (j) {return HALL_SIZE * j;}
+function xPixInd (x) {return Math.floor(x / HALL_SIZE);}
+function yPixInd (y) {return Math.floor(y / HALL_SIZE);}
 
 function isValid (i, j) {return i >= 0 && i < COLS && j >= 0 && j < ROWS;}
 
@@ -209,7 +209,35 @@ function blastWalls (i, j) {
 }
 
 function resetAll () {
-    
+    // create new walls
+    initAdjacency();
+    walls.clear(destroyChild=true);
+    divide(0, 0, COLS, ROWS);
+
+    // reposition items and make visible
+    var randX = iPixLoc(randomInt(COLS)+0.5);
+    var randY = jPixLoc(randomInt(ROWS)+0.5);
+    star.x = randX;
+    star.y = randY;
+    star.visible = true;
+    starCount = 0; 
+
+    randX = iPixLoc(randomInt(COLS)+0.5);
+    randY = jPixLoc(randomInt(ROWS)+0.5);
+    bomb.x = randX;
+    bomb.y = randY;
+    bomb.visible = true;
+    bombCount = 0;
+
+    // reposition player and spotlight
+    player.x = iPixLoc(0.5);
+    player.y = jPixLoc(0.5);
+    spotlight.x = iPixLoc(0.5);
+    spotlight.y = jPixLoc(0.5);
+
+    // reposition monster
+    monster.x = iPixLoc(5.5);
+    monster.y = jPixLoc(5.5);
 }
 //---------------------------- Helper Functions -------------------------------
 // -------------------------------- END -------------------------------------
@@ -239,14 +267,17 @@ start.create = function () {
     this.add.image(WIDTH/2, HEIGHT/3 + 80, 'logo2').setScale(0.75);
     button = this.add.image(WIDTH/2, HEIGHT * 2/3, 'start').setScale(0.5);
     button.setInteractive();
+
+    // this.scene.launch('start');
+    this.scene.bringToTop('start');
 };
 
 start.update = function() {
     button.on('pointerdown', () => {
           // this.scene.launch('play');
-          // this.scene.bringToTop('play');
+          this.scene.bringToTop('play');
           this.scene.resume('play');
-          this.scene.stop('start');
+          this.scene.pause('start');
         });
 }
 // -------------------------- Start Scene ------------------------------
@@ -273,17 +304,21 @@ stop.create = function () {
     button = this.add.image(WIDTH/2, HEIGHT * 2/3, 'reset').setScale(0.5);
     button.setInteractive();
     // this.scene.launch('play');
+    this.scene.bringToTop('start');
 };
 
 stop.update = function() {
     // helloButton.on('pointerover', () => { console.log('pointerover'); });
 
     button.on('pointerdown', () => {
-          // console.log('pointerover');
-          window.location.reload();
-          // this.scene.start('start');
-          // this.scene.pause('stop');
-        });
+        // console.log('pointerover');
+        //   window.location.reload();
+        resetAll();
+        this.scene.restart('start');
+        this.scene.bringToTop('start');
+        this.scene.restart('play');
+        this.scene.stop('stop');
+    });
 }
 // -------------------------- Stop Scene ------------------------------
 // -------------------------------- END -------------------------------------
@@ -357,8 +392,6 @@ play.create = function()
 
     walls = this.physics.add.staticGroup();
     initAdjacency();
-    console.log(isNeighbor(0, 1, 1, 1));
-    console.log(isNeighbor(3, 4, 5, 4));
 
     // walls.create(400, 568, 'flat').setScale(0.1).refreshBody();
     // walls.create(700, 568, 'tall').setScale(0.1).refreshBody();
@@ -379,7 +412,7 @@ play.create = function()
     bomb = this.physics.add.image(randX, randY, 'bomb').setScale(1.5);
 
     // generate player and monster
-    player = this.physics.add.sprite(0, 0, 'baby');
+    player = this.physics.add.sprite(iPixLoc(0.5), jPixLoc(0.5), 'baby');
     player.setCollideWorldBounds(true);
     monster = this.physics.add.sprite(iPixLoc(5.5), jPixLoc(5.5), 'wolf');
     monster.setCollideWorldBounds(true);
@@ -387,8 +420,8 @@ play.create = function()
     blocker = this.add.image(WIDTH/2, HEIGHT/2, 'box').setScale(Math.max(WIDTH, HEIGHT)/ 400);
 
     spotlight = this.make.sprite({
-        x: 400,
-        y: 300,
+        x: iPixLoc(0.5),
+        y: jPixLoc(0.5),
         key: 'mask',
         add: false
     }).setScale(SPOTLIGHT_SIZE/SPOTLIGHT_ORIG);
@@ -560,13 +593,12 @@ play.update = function()
 
         // TODO: actually end game!!!
         console.log("GAME OVER!");
-        this.scene.start('stop');
+        this.scene.launch('stop');
+        this.scene.bringToTop('stop');
         this.scene.stop('play');
     }
 
     if (Math.abs(player.x - star.x) < 20  && Math.abs(player.y - star.y) < 20) {
-        // TODO: actually use the item
-        // console.log("SHINY!");
 
         if(starCount > 5 && star.visible) {
             star.visible = false;
@@ -580,7 +612,6 @@ play.update = function()
     }
 
     if (Math.abs(player.x - bomb.x) < 20  && Math.abs(player.y - bomb.y) < 20) {
-        // TODO: actually use the item
 
         if(bombCount > 5 && bomb.visible) {
             bomb.visible = false;
