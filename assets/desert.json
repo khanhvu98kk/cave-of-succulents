@@ -16,13 +16,13 @@
     {
 
     },
- "tileheight":32,
+ "tileheight":30,
  "tilesets":[
         {
          "firstgid":1,
          "image":"/Users/khanhvu98kk/Documents/Princeton 2018-2019/cave-of-succulents/assets/desert_tiles.png",
-         "imageheight":199,
-         "imagewidth":265,
+         "imageheight":179,
+         "imagewidth":240,
          "margin":1,
          "name":"Desert",
          "properties":
@@ -30,10 +30,10 @@
 
             },
          "spacing":1,
-         "tileheight":32,
-         "tilewidth":32
+         "tileheight":30,
+         "tilewidth":30
         }],
- "tilewidth":32,
+ "tilewidth":30,
  "version":1,
  "width":40
 }
