@@ -1,6 +1,6 @@
 //---------------------------- Game constants -------------------------------
 //---------------------------- START -------------------------------
-var COLS = 20;
+var COLS = 15;
 var ROWS = 15;
 var HALL_SIZE = 64;
 var WIDTH = COLS*HALL_SIZE;
@@ -220,7 +220,7 @@ function resetAll () {
     star.x = randX;
     star.y = randY;
     star.visible = true;
-    starCount = 0; 
+    starCount = 0;
 
     randX = iPixLoc(randomInt(COLS)+0.5);
     randY = jPixLoc(randomInt(ROWS)+0.5);
