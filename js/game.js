@@ -1,11 +1,13 @@
 //---------------------------- Game constants -------------------------------
 //---------------------------- START -------------------------------
-var COLS = 15;
-var ROWS = 15;
+var COLS = 12;
+var ROWS = 12;
 var HALL_SIZE = 64;
-var WIDTH = COLS*HALL_SIZE;
-var HEIGHT = ROWS*HALL_SIZE;
-var WALL_SCALE = 0.104;
+var WALL_WIDTH = 32;
+var CELL_SIZE = HALL_SIZE + WALL_WIDTH;
+var WIDTH = COLS*CELL_SIZE;
+var HEIGHT = ROWS*CELL_SIZE;
+var WALL_SCALE = 0.225;
 
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
@@ -37,10 +39,13 @@ function two2one (i, j) {return (j*COLS) + i;}
 function one2i (one) {return Math.floor(one / COLS);}
 function one2j (one) {return one % ROWS;}
 
-function iPixLoc (i) {return HALL_SIZE * i;}
-function jPixLoc (j) {return HALL_SIZE * j;}
-function xPixInd (x) {return Math.floor(x / HALL_SIZE);}
-function yPixInd (y) {return Math.floor(y / HALL_SIZE);}
+// PixLoc returns the center of the hall
+function iPixLoc (i) {return CELL_SIZE * i + (HALL_SIZE/2);}
+function jPixLoc (j) {return CELL_SIZE * j + (HALL_SIZE/2);}
+function iWallLocTall (i) {return iPixLoc(i) + (HALL_SIZE/2) + (WALL_WIDTH/2);}
+function jWallLocFlat (j) {return jPixLoc(j) + (HALL_SIZE/2) + (WALL_WIDTH/2);}
+function xPixInd (x) {return Math.floor(x / CELL_SIZE);}
+function yPixInd (y) {return Math.floor(y / CELL_SIZE);}
 
 function isValid (i, j) {return i >= 0 && i < COLS && j >= 0 && j < ROWS;}
 
@@ -117,15 +122,15 @@ function createBoxWall (i, j) {
 function createWall (i, j, orient='tall') {
 
     if (orient=='tall') {
-        var iLoc = iPixLoc(i + 1);
-        var jLoc = jPixLoc(j + 0.5);
+        var iLoc = iWallLocTall(i);
+        var jLoc = jPixLoc(j);
         var newWall = walls.create(iLoc, jLoc, 'tall').setScale(WALL_SCALE).refreshBody();
         wallsList[two2one(i, j)].push(newWall);
         removeAdjacency(i, j, i+1, j);
     }
     else if (orient=='flat') {
-        var iLoc = iPixLoc(i + 0.5);
-        var jLoc = jPixLoc(j + 1);
+        var iLoc = iPixLoc(i);
+        var jLoc = jWallLocFlat(j);
         var newWall = walls.create(iLoc, jLoc, 'flat').setScale(WALL_SCALE).refreshBody();
         wallsList[two2one(i, j)].push(newWall);
         removeAdjacency(i, j, i, j+1);
@@ -208,6 +213,7 @@ function blastWalls (i, j) {
     }
 }
 
+// create new maze and place objects afresh 
 function resetAll () {
     // create new walls
     initAdjacency();
@@ -215,30 +221,41 @@ function resetAll () {
     divide(0, 0, COLS, ROWS);
 
     // reposition items and make visible
-    var randX = iPixLoc(randomInt(COLS)+0.5);
-    var randY = jPixLoc(randomInt(ROWS)+0.5);
+    var randX = iPixLoc(randomInt(COLS));
+    var randY = jPixLoc(randomInt(ROWS));
     star.x = randX;
     star.y = randY;
     star.visible = true;
     starCount = 0;
 
-    randX = iPixLoc(randomInt(COLS)+0.5);
-    randY = jPixLoc(randomInt(ROWS)+0.5);
+    randX = iPixLoc(randomInt(COLS));
+    randY = jPixLoc(randomInt(ROWS));
     bomb.x = randX;
     bomb.y = randY;
     bomb.visible = true;
     bombCount = 0;
 
     // reposition player and spotlight
-    player.x = iPixLoc(0.5);
-    player.y = jPixLoc(0.5);
-    spotlight.x = iPixLoc(0.5);
-    spotlight.y = jPixLoc(0.5);
+    player.x = iPixLoc(0);
+    player.y = jPixLoc(0);
+    spotlight.x = iPixLoc(0);
+    spotlight.y = jPixLoc(0);
 
     // reposition monster
-    monster.x = iPixLoc(5.5);
-    monster.y = jPixLoc(5.5);
+    monster.x = iPixLoc(5);
+    monster.y = jPixLoc(5);
+    monsterTarget.x = iPixLoc(5);
+    monsterTarget.y = jPixLoc(5);
+    monsterTarget.xPrev = iPixLoc(5);
+    monsterTarget.yPrev = jPixLoc(5.1);
 }
+
+// update monster target
+function updateTarget (monster, monsterTarget) {
+    
+    
+}
+
 //---------------------------- Helper Functions -------------------------------
 // -------------------------------- END -------------------------------------
 
@@ -322,6 +339,7 @@ stop.update = function() {
 
 var play = new Phaser.Scene('play');
 var player, monster;
+var monsterTarget = [];
 
 play.preload = function()
 {
@@ -330,8 +348,8 @@ play.preload = function()
 
     this.load.image('sky', 'assets/sky.png');
     this.load.image('mask', 'assets/mask.png');
-    this.load.image('flat', 'assets/flat.png');
-    this.load.image('tall', 'assets/tall.png');
+    this.load.image('flat', 'assets/flat3.png');
+    this.load.image('tall', 'assets/tall3.png');
     this.load.image('box', 'assets/box.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
@@ -396,25 +414,30 @@ play.create = function()
     // console.log(wallsList);
 
     // randomly generate items
-    var randX = iPixLoc(randomInt(COLS)+0.5);
-    var randY = jPixLoc(randomInt(ROWS)+0.5);
+    var randX = iPixLoc(randomInt(COLS));
+    var randY = jPixLoc(randomInt(ROWS));
     star = this.physics.add.image(randX, randY, 'star').setScale(1.5);
 
-    randX = iPixLoc(randomInt(COLS)+0.5);
-    randY = jPixLoc(randomInt(ROWS)+0.5);
+    randX = iPixLoc(randomInt(COLS));
+    randY = jPixLoc(randomInt(ROWS));
     bomb = this.physics.add.image(randX, randY, 'bomb').setScale(1.5);
 
     // generate player and monster
-    player = this.physics.add.sprite(iPixLoc(0.5), jPixLoc(0.5), 'baby');
+    player = this.physics.add.sprite(iPixLoc(0), jPixLoc(0), 'baby');
     player.setCollideWorldBounds(true);
-    monster = this.physics.add.sprite(iPixLoc(5.5), jPixLoc(5.5), 'wolf');
+    monster = this.physics.add.sprite(iPixLoc(5), jPixLoc(5), 'wolf');
     monster.setCollideWorldBounds(true);
+    monsterTarget.x = iPixLoc(5);
+    monsterTarget.y = jPixLoc(5);
+    monsterTarget.xPrev = iPixLoc(5);
+    monsterTarget.yPrev = jPixLoc(5.1);
+    console.log(monsterTarget);
 
     blocker = this.add.image(WIDTH/2, HEIGHT/2, 'box').setScale(Math.max(WIDTH, HEIGHT)/ 400);
 
     spotlight = this.make.sprite({
-        x: iPixLoc(0.5),
-        y: jPixLoc(0.5),
+        x: iPixLoc(0),
+        y: jPixLoc(0),
         key: 'mask',
         add: false
     }).setScale(SPOTLIGHT_SIZE/SPOTLIGHT_ORIG);
