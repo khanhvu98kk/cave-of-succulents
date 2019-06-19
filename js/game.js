@@ -1,13 +1,13 @@
 //---------------------------- Game constants -------------------------------
 //---------------------------- START -------------------------------
-var COLS = 12;
+var COLS = 15;
 var ROWS = 10;
 var HALL_SIZE = 64;
 var WALL_WIDTH = 32;
 var CELL_SIZE = HALL_SIZE + WALL_WIDTH;
 var WIDTH = COLS*CELL_SIZE;
 var HEIGHT = ROWS*CELL_SIZE;
-var WALL_SCALE = 0.225;
+var WALL_SCALE = 0.22;
 
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
@@ -547,7 +547,7 @@ play.create = function()
     });
     this.anims.create({
         key: 'f',
-        frames: [ { key: 'dude', frame: 1 } ],
+        frames: [ { key: 'wolf', frame: 1 } ],
         frameRate: 20
     });
     this.anims.create({
@@ -575,85 +575,84 @@ play.create = function()
     this.scene.pause('play');
 }
 
-play.update = function()
-{
-  // monster's movements
-  var num = Math.random() * 100;
-  if (num >= 98) {  // then change direction
-      var dir = Math.random() * 100;
-      if (dir <= 25) {    // up
-          monster.setVelocityY(-MONSTER_VEL);
-          monster.setVelocityX(0);
+play.update = function() {
+    // monster's movements
+    var currX = monster.x;
+    var currY = monster.y;
+    var targetX = monsterTarget.x;
+    var targetY = monsterTarget.y;
+    if (dir <= 25) {    // up
+        monster.setVelocityY(-MONSTER_VEL);
+        monster.setVelocityX(0);
 
-          monster.anims.play('w', true);
-      }
-      else if (dir <= 50) {   // down
-          monster.setVelocityY(MONSTER_VEL);
-          monster.setVelocityX(0);
+        monster.anims.play('w', true);
+    }
+    else if (dir <= 50) {   // down
+        monster.setVelocityY(MONSTER_VEL);
+        monster.setVelocityX(0);
 
-          monster.anims.play('s', true);
-      }
-      else if (dir <= 75) {   // left
-          monster.setVelocityX(-MONSTER_VEL);
-          monster.setVelocityY(0);
+        monster.anims.play('s', true);
+    }
+    else if (dir <= 75) {   // left
+        monster.setVelocityX(-MONSTER_VEL);
+        monster.setVelocityY(0);
 
-          monster.anims.play('a', true);
-      }
-      else {            // right
-          monster.setVelocityX(MONSTER_VEL);
-          monster.setVelocityY(0);
+        monster.anims.play('a', true);
+    }
+    else {            // right
+        monster.setVelocityX(MONSTER_VEL);
+        monster.setVelocityY(0);
 
-          monster.anims.play('d', true);
-      }
-  }
+        monster.anims.play('d', true);
+    }
 
 
-  // Player's movements
-  // --------------------------  START ------------------------------
-  if (cursors.left.isDown)
-  {
-      player.setVelocityX(-BABY_VEL);
-      player.setVelocityY(0);
+    // Player's movements
+    // --------------------------  START ------------------------------
+    if (cursors.left.isDown)
+    {
+        player.setVelocityX(-BABY_VEL);
+        player.setVelocityY(0);
 
-      player.anims.play('left', true);
-  }
-  else if (cursors.right.isDown)
-  {
-      player.setVelocityX(BABY_VEL);
-      player.setVelocityY(0);
+        player.anims.play('left', true);
+    }
+    else if (cursors.right.isDown)
+    {
+        player.setVelocityX(BABY_VEL);
+        player.setVelocityY(0);
 
-      player.anims.play('right', true);
-  }
-  else if (cursors.up.isDown)
-  {
-      player.setVelocityY(-BABY_VEL);
-      player.setVelocityX(0);
+        player.anims.play('right', true);
+    }
+    else if (cursors.up.isDown)
+    {
+        player.setVelocityY(-BABY_VEL);
+        player.setVelocityX(0);
 
-      player.anims.play('up', true);
-  }
-  else if (cursors.down.isDown)
-  {
-      player.setVelocityY(BABY_VEL);
-      player.setVelocityX(0);
+        player.anims.play('up', true);
+    }
+    else if (cursors.down.isDown)
+    {
+        player.setVelocityY(BABY_VEL);
+        player.setVelocityX(0);
 
-      player.anims.play('down', true);
-  }
-  else
-  {
-      player.setVelocityX(0);
-      player.setVelocityY(0);
+        player.anims.play('down', true);
+    }
+    else
+    {
+        player.setVelocityX(0);
+        player.setVelocityY(0);
 
-      player.anims.play('turn');
-  }
-  // --------------------------  END ------------------------------
+        player.anims.play('turn');
+    }
+    // --------------------------  END ------------------------------
 
-  // Move the Spotlight
-  spotlight.x = player.x;
-  spotlight.y = player.y;
+    // Move the Spotlight
+    spotlight.x = player.x;
+    spotlight.y = player.y;
 
-  // handling collision
-  // console.log(player.x, player.y);
-  // console.log(monster.x, monster.y);
+    // handling collision
+    // console.log(player.x, player.y);
+    // console.log(monster.x, monster.y);
     if (Math.abs(player.x - monster.x) < 20  &&
         Math.abs(player.y - monster.y) < 20) {
 
