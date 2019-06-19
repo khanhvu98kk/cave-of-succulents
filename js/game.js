@@ -1,4 +1,5 @@
-// Game constants
+//---------------------------- Game constants -------------------------------
+//---------------------------- START -------------------------------
 var WIDTH = 900;
 var HEIGHT = 900;
 var COLS = 15;
@@ -11,26 +12,10 @@ var IS_DARK = false;
 
 var BABY_VEL = 150;
 var MONSTER_VEL = 125;
+//---------------------------- Game constants -------------------------------
+//---------------------------- END -------------------------------
 
-var config = {
-    type: Phaser.AUTO,
-    width: WIDTH,
-    height: HEIGHT,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 0 },
-            debug: false
-        }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    }
-};
-
-var player;
+// var player;
 var walls;
 var wallsDict = {};
 var cursors;
@@ -43,9 +28,9 @@ var bombCount = 0;
 var blocker;
 var spotlight;
 
-var game = new Phaser.Game(config);
 
 // -------------------------- Helper Functions ------------------------------
+//---------------------------- START -------------------------------
 
 function two2one (i, j) {return (j*COLS) + i;}
 function one2i (one) {return Math.floor(one / COLS);}
@@ -78,7 +63,7 @@ function initAdjacency () {
         var i = one2i(one);
         var j = one2j(one);
 
-        if (i > 0) 
+        if (i > 0)
             neighbors.push(two2one(i-1, j));
         if (i < COLS-1)
             neighbors.push(two2one(i+1, j));
@@ -86,7 +71,7 @@ function initAdjacency () {
             neighbors.push(two2one(i, j-1));
         if (j < ROWS-1)
             neighbors.push(two2one(i, j+1));
-        
+
         adjacency.push(neighbors);
         wallsDict.push([]);
     }
@@ -129,7 +114,7 @@ function createBoxWall (i, j) {
 }
 
 function createWall (i, j, orient='tall') {
-    
+
     if (orient=='tall') {
         var iLoc = iPixLoc(i + 1);
         var jLoc = jPixLoc(j + 0.5);
@@ -154,7 +139,7 @@ function divide (startX, startY, width, height) {
     var horiz = false;
     if (width < height)
         horiz = true;
-    
+
     var wall = 0; // dist of wall from start
     var gap = 0; // dist of gap from start
 
@@ -168,7 +153,7 @@ function divide (startX, startY, width, height) {
         gap = randomInt(height);
     }
 
-    // create wall 
+    // create wall
     if (horiz) {
         var wy = startY + wall; // wall y
         var gx = startX + gap; // gap x
@@ -208,9 +193,9 @@ function blastWalls (i, j) {
         for (var y = j - 1; y < j + 2; y++) {
             if (!isValid(x, y))
                 continue;
-            
+
             console.log("Blasting: " + x + " " + y);
-            
+
             var thisWalls = wallsDict[two2one(x, y)];
             console.log(thisWalls)
             for (var w = 0; w < thisWalls.length; w++) {
@@ -221,10 +206,91 @@ function blastWalls (i, j) {
         }
     }
 }
-
+//---------------------------- Helper Functions -------------------------------
 // -------------------------------- END -------------------------------------
 
-function preload ()
+
+// -------------------------- Start Scene ------------------------------
+// -------------------------------- START -------------------------------------
+var start = new Phaser.Scene('start');
+var button;
+
+start.preload = function () {
+    this.load.image('start', 'assets/start.png');
+    this.load.image('succ1', 'assets/succ1.png');
+    this.load.image('succ2', 'assets/succ2.png');
+    this.load.image('logo1', 'assets/logo1.png');
+    this.load.image('logo2', 'assets/logo2.png');
+};
+
+start.create = function () {
+    console.log(this.sys.settings.key, 'is alive');
+    start.cameras.main.setBackgroundColor('#000000')
+    // this.add.image(WIDTH/2, HEIGHT/3, 'gameover').setScale(0.5);
+    // this.scene.bringToTop('stop');
+    this.add.image(WIDTH/4, HEIGHT * 2/3, 'succ1').setScale(0.5);
+    this.add.image(WIDTH * 3/4, HEIGHT * 2/3, 'succ2').setScale(0.5);
+    this.add.image(WIDTH/2, HEIGHT/3 - 50, 'logo1').setScale(0.75);
+    this.add.image(WIDTH/2, HEIGHT/3 + 80, 'logo2').setScale(0.75);
+    button = this.add.image(WIDTH/2, HEIGHT * 2/3, 'start').setScale(0.5);
+    button.setInteractive();
+};
+
+start.update = function() {
+    button.on('pointerdown', () => {
+          // this.scene.launch('play');
+          // this.scene.bringToTop('play');
+          this.scene.resume('play');
+          this.scene.stop('start');
+        });
+}
+// -------------------------- Start Scene ------------------------------
+// -------------------------------- END -------------------------------------
+
+
+
+// -------------------------- Stop Scene ------------------------------
+// -------------------------------- START -------------------------------------
+var stop = new Phaser.Scene('stop');
+var button;
+
+stop.preload = function () {
+    this.load.image('gameover', 'assets/stop.png');
+    this.load.image('reset', 'assets/reset.png');
+};
+
+stop.create = function () {
+    console.log(this.sys.settings.key, 'is alive');
+    stop.cameras.main.setBackgroundColor('#000000')
+    this.add.image(WIDTH/2, HEIGHT/3, 'gameover').setScale(0.5);
+    // this.scene.bringToTop('stop');
+
+    button = this.add.image(WIDTH/2, HEIGHT * 2/3, 'reset').setScale(0.5);
+    button.setInteractive();
+    // this.scene.launch('play');
+};
+
+stop.update = function() {
+    // helloButton.on('pointerover', () => { console.log('pointerover'); });
+
+    button.on('pointerdown', () => {
+          // console.log('pointerover');
+          window.location.reload();
+          // this.scene.start('start');
+          // this.scene.pause('stop');
+        });
+}
+// -------------------------- Stop Scene ------------------------------
+// -------------------------------- END -------------------------------------
+
+
+// -------------------------- Play Scene ------------------------------
+// -------------------------------- END -------------------------------------
+
+var play = new Phaser.Scene('play');
+var player, monster;
+
+play.preload = function()
 {
     this.load.image('sky', 'assets/sky.png');
     this.load.image('mask', 'assets/mask.png');
@@ -237,8 +303,11 @@ function preload ()
     this.load.spritesheet('wolf', 'assets/wolf.png', { frameWidth: 48, frameHeight: 35 });
 }
 
-function create ()
+play.create = function()
 {
+    // this.scene.start('start');
+    // this.scene.pause('play');
+
     this.add.image(WIDTH/2, HEIGHT/2, 'sky').setScale(1.5);
 
     // TODO: once the maze is done, add this back in for not walking through walls
@@ -358,9 +427,13 @@ function create ()
 
     this.physics.add.collider(player, walls);
     this.physics.add.collider(monster, walls);
+
+    this.scene.launch('start');
+    this.scene.bringToTop('start');
+    this.scene.pause('play');
 }
 
-function update ()
+play.update = function()
 {
   // monster's movements
   var num = Math.random() * 100;
@@ -444,12 +517,14 @@ function update ()
 
         // TODO: actually end game!!!
         console.log("GAME OVER!");
+        this.scene.start('stop');
+        this.scene.stop('play');
     }
 
     if (Math.abs(player.x - star.x) < 20  && Math.abs(player.y - star.y) < 20) {
         // TODO: actually use the item
         // console.log("SHINY!");
-        
+
         if(starCount > 5 && star.visible) {
             star.visible = false;
             console.log("SHINY!");
@@ -463,7 +538,6 @@ function update ()
 
     if (Math.abs(player.x - bomb.x) < 20  && Math.abs(player.y - bomb.y) < 20) {
         // TODO: actually use the item
-        // console.log("BOOM!");
 
         if(bombCount > 5 && bomb.visible) {
             bomb.visible = false;
@@ -481,3 +555,23 @@ function update ()
     }
 
 }
+// -------------------------- Play Scene ------------------------------
+// -------------------------------- END -------------------------------------
+
+
+
+var config = {
+    type: Phaser.AUTO,
+    width: WIDTH,
+    height: HEIGHT,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 0 },
+            debug: false
+        }
+    },
+    scene: [ play, start, stop ]
+};
+
+var game = new Phaser.Game(config);
