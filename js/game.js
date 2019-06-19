@@ -326,7 +326,7 @@ var player, monster;
 play.preload = function()
 {
     this.load.image('tiles', 'assets/desert_tiles.png');
-    this.load.tilemapTiledJSON('map', 'assets/desert.json');
+    this.load.tilemapTiledJSON('map', 'assets/desert-hard.json');
 
     this.load.image('sky', 'assets/sky.png');
     this.load.image('mask', 'assets/mask.png');
@@ -341,43 +341,9 @@ play.preload = function()
 
 play.create = function()
 {
-    // desert background
-    // var level = [
-    //   [  30, 30, 30, 30, 14, 15, 16, 30, 30, 30, 30, 30, 30, 30, 30 ],
-    //   [  31, 33, 34, 34, 34, 34, 34, 34, 34, 35, 30, 30, 30, 30, 30 ],
-    //   [  30, 30, 30, 30, 34, 44, 26, 45, 34, 35, 30,  9, 11, 30, 30 ],
-    //   [  30, 30, 30, 30, 42, 42, 42, 37, 34, 34, 44, 26, 45, 34, 35 ],
-    //   [  34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 35, 45, 34, 35 ],
-    //   [  30, 30, 30, 30, 14, 15, 16, 30, 30, 30, 30, 30, 30, 30, 30 ],
-    //   [  31, 33, 34, 34, 34, 34, 34, 34, 34, 35, 30, 30, 30, 30, 30 ],
-    //   [  10, 10, 10, 10, 10, 11, 30, 30, 30,  9, 10, 10, 10, 10, 10 ],
-    //   [  10, 10, 10, 10, 10, 11, 30, 30, 30,  9, 10, 10, 10, 10, 10 ],
-    //   [  34, 35, 30,  9, 11, 30, 30, 30, 30, 22, 23,  5, 15, 15, 16 ],
-    //   [  31, 33, 34, 34, 34, 34, 34, 34, 34, 35, 30, 30, 30, 30, 30 ],
-    //   [  10, 10, 10, 10, 10, 11, 30, 30, 30,  9, 10, 10, 10, 10, 10 ],
-    //   [  10, 10, 10, 10, 10, 11, 30, 30, 30,  9, 10, 10, 10, 10, 10 ],
-    //   [  34, 35, 30,  9, 11, 30, 30, 30, 30, 22, 23,  5, 15, 15, 16 ],
-    //   [  30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30 ]
-    // ];
-    // var map = this.add.tilemap({ data: level, tileWidth: 32, tileHeight: 32 });
-    // var tiles = map.addTilesetImage("tiles");
-    // var layer = map.createStaticLayer(0, tiles, 0, 0);
-    // this.backgroundLayer = layer;
-    var map = this.make.tilemap({key: 'map'});
+    var map = this.make.tilemap({key: 'map'});                  // desert background
     var tileset = map.addTilesetImage("Desert", "tiles");
     var layer = map.createStaticLayer('Ground', tileset, 0, 0);
-    // layer.resizeWorld();
-    // console.log(layer);
-    // this.physics.world.bounds.width = layer.width;
-    // this.physics.world.bounds.height = layer.height;
-
-
-
-  //   const map = this.make.tilemap({ key: "map" });
-  // const tileset = map.addTilesetImage("tuxmon-sample-32px-extruded", "tiles");
-  // const belowLayer = map.createStaticLayer("Below Player", tileset, 0, 0);
-  // const worldLayer = map.createStaticLayer("World", tileset, 0, 0);
-  // const aboveLayer = map.createStaticLayer("Above Player", tileset, 0, 0);
 
     // this.add.image(WIDTH/2, HEIGHT/2, 'sky').setScale(1.5);
 
