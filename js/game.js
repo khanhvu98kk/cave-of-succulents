@@ -1,6 +1,6 @@
 //---------------------------- Game constants -------------------------------
 //---------------------------- START -------------------------------
-var COLS = 15;
+var COLS = 10;
 var ROWS = 10;
 var HALL_SIZE = 64;
 var WALL_WIDTH = 32;
@@ -37,8 +37,8 @@ var spotlight;
 //---------------------------- START -------------------------------
 
 function two2one (i, j) {return (j*COLS) + i;}
-function one2i (one) {return Math.floor(one / COLS);}
-function one2j (one) {return one % ROWS;}
+function one2i (one) {return one % COLS;}
+function one2j (one) {return Math.floor(one / ROWS);}
 
 // PixLoc returns the center of the hall
 function iPixLoc (i) {return CELL_SIZE * i + (HALL_SIZE/2);}
@@ -253,8 +253,34 @@ function resetAll () {
 
 // update monster target
 function updateTarget (monster, monsterTarget) {
+    var iPrev = xPixInd(monsterTarget.xPrev);
+    var jPrev = yPixInd(monsterTarget.yPrev);
+    var i = xPixInd(monster.x);
+    var j = yPixInd(monster.y);
+    var neighbors = adjacency[two2one(i, j)]
 
+    // remove previous direction from neighbors and check if any left
+    neighbors = arrayRemove(neighbors, two2one(iPrev, jPrev));
+    if (neighbors.length == 0) {
+        // reverse direction
+        var temp = monsterTarget.xPrev;
+        monsterTarget.xPrev = monsterTarget.x;
+        monsterTarget.x = temp;
 
+        temp = monsterTarget.yPrev;
+        monsterTarget.yPrev = monsterTarget.y;
+        monsterTarget.y = monsterTarget.yPrev;
+        return;
+    }
+
+    var rand = randomInt(neighbors.length);
+    var newTarget = neighbors[rand];
+
+    // update target
+    monsterTarget.xPrev = monsterTarget.x;
+    monsterTarget.yPrev = monsterTarget.y;
+    monsterTarget.x = iPixLoc(one2i(newTarget));
+    monsterTarget.y = jPixLoc(one2j(newTarget));
 }
 
 //---------------------------- Helper Functions -------------------------------
@@ -416,6 +442,7 @@ play.create = function()
     // createBoxWall(4, 7);
 
     divide(0, 0, COLS, ROWS);
+    
     // console.log(wallsList);
 
     // randomly generate items
