@@ -586,9 +586,10 @@ play.update = function()
 
         // TODO: actually end game!!!
         console.log("GAME OVER!");
-        this.scene.start('stop');
-        this.scene.bringToTop('stop');
-        this.scene.pause('play');
+        // this.scene.start('stop');
+        // this.scene.bringToTop('stop');
+        // this.scene.pause('play');
+        resetAll();
     }
 
     if (Math.abs(player.x - star.x) < 20  && Math.abs(player.y - star.y) < 20) {
