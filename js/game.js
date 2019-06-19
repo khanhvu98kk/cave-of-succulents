@@ -267,17 +267,14 @@ start.create = function () {
     this.add.image(WIDTH/2, HEIGHT/3 + 80, 'logo2').setScale(0.75);
     button = this.add.image(WIDTH/2, HEIGHT * 2/3, 'start').setScale(0.5);
     button.setInteractive();
-
-    // this.scene.launch('start');
-    this.scene.bringToTop('start');
 };
 
 start.update = function() {
     button.on('pointerdown', () => {
           // this.scene.launch('play');
-          this.scene.bringToTop('play');
+          // this.scene.bringToTop('play');
           this.scene.resume('play');
-          this.scene.pause('start');
+          this.scene.stop('start');
         });
 }
 // -------------------------- Start Scene ------------------------------
@@ -304,21 +301,17 @@ stop.create = function () {
     button = this.add.image(WIDTH/2, HEIGHT * 2/3, 'reset').setScale(0.5);
     button.setInteractive();
     // this.scene.launch('play');
-    this.scene.bringToTop('start');
 };
 
 stop.update = function() {
     // helloButton.on('pointerover', () => { console.log('pointerover'); });
 
     button.on('pointerdown', () => {
-        // console.log('pointerover');
-        //   window.location.reload();
-        resetAll();
-        this.scene.restart('start');
-        this.scene.bringToTop('start');
-        this.scene.restart('play');
-        this.scene.stop('stop');
-    });
+          // console.log('pointerover');
+          window.location.reload();
+          // this.scene.start('start');
+          // this.scene.pause('stop');
+        });
 }
 // -------------------------- Stop Scene ------------------------------
 // -------------------------------- END -------------------------------------
@@ -593,9 +586,9 @@ play.update = function()
 
         // TODO: actually end game!!!
         console.log("GAME OVER!");
-        this.scene.launch('stop');
+        this.scene.start('stop');
         this.scene.bringToTop('stop');
-        this.scene.stop('play');
+        this.scene.pause('play');
     }
 
     if (Math.abs(player.x - star.x) < 20  && Math.abs(player.y - star.y) < 20) {
