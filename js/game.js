@@ -1,7 +1,7 @@
 //---------------------------- Game constants -------------------------------
 //---------------------------- START -------------------------------
 var COLS = 12;
-var ROWS = 12;
+var ROWS = 10;
 var HALL_SIZE = 64;
 var WALL_WIDTH = 32;
 var CELL_SIZE = HALL_SIZE + WALL_WIDTH;
@@ -394,28 +394,28 @@ play.create = function()
     randY = jPixLoc(randomInt(ROWS));
     bomb = this.physics.add.image(randX, randY, 'bomb').setScale(1.5);
 
-    // randX = iPixLoc(randomInt(COLS)+0.5);
-    // randY = jPixLoc(randomInt(ROWS)+0.5);
+    // randX = iPixLoc(randomInt(COLS));
+    // randY = jPixLoc(randomInt(ROWS));
     // succ1 = this.physics.add.image(randX, randY, 'succ1').setScale(0.3);
     //
-    // randX = iPixLoc(randomInt(COLS)+0.5);
-    // randY = jPixLoc(randomInt(ROWS)+0.5);
+    // randX = iPixLoc(randomInt(COLS));
+    // randY = jPixLoc(randomInt(ROWS));
     // succ2 = this.physics.add.image(randX, randY, 'succ2').setScale(0.3);
 
-    randX = iPixLoc(randomInt(COLS)+0.5);
-    randY = jPixLoc(randomInt(ROWS)+0.5);
+    randX = iPixLoc(randomInt(COLS));
+    randY = jPixLoc(randomInt(ROWS));
     succ3 = this.physics.add.image(randX, randY, 'succ3').setScale(0.07);
 
-    randX = iPixLoc(randomInt(COLS)+0.5);
-    randY = jPixLoc(randomInt(ROWS)+0.5);
+    randX = iPixLoc(randomInt(COLS));
+    randY = jPixLoc(randomInt(ROWS));
     succ4 = this.physics.add.image(randX, randY, 'succ4').setScale(0.1);
 
-    randX = iPixLoc(randomInt(COLS)+0.5);
-    randY = jPixLoc(randomInt(ROWS)+0.5);
+    randX = iPixLoc(randomInt(COLS));
+    randY = jPixLoc(randomInt(ROWS));
     succ5 = this.physics.add.image(randX, randY, 'succ5').setScale(0.2);
 
-    randX = iPixLoc(randomInt(COLS)+0.5);
-    randY = jPixLoc(randomInt(ROWS)+0.5);
+    randX = iPixLoc(randomInt(COLS));
+    randY = jPixLoc(randomInt(ROWS));
     succ6 = this.physics.add.image(randX, randY, 'succ6').setScale(0.2);
 
     // generate player and monster
