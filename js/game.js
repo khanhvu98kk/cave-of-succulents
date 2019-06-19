@@ -1,11 +1,11 @@
 //---------------------------- Game constants -------------------------------
 //---------------------------- START -------------------------------
-var COLS = 10;
+var COLS = 15;
 var ROWS = 10;
 var HALL_SIZE = 64;
 var WALL_WIDTH = 32;
 var CELL_SIZE = HALL_SIZE + WALL_WIDTH;
-var WIDTH = COLS*CELL_SIZE;
+var WIDTH = (COLS+2)*CELL_SIZE;
 var HEIGHT = ROWS*CELL_SIZE;
 var WALL_SCALE = 0.22;
 
@@ -14,7 +14,7 @@ var SPOTLIGHT_ORIG = 213;
 var IS_DARK = false;
 
 var BABY_VEL = 150;
-var MONSTER_VEL = 125;
+var MONSTER_VEL = 100;
 //---------------------------- Game constants -------------------------------
 //---------------------------- END -------------------------------
 
@@ -38,7 +38,7 @@ var spotlight;
 
 function two2one (i, j) {return (j*COLS) + i;}
 function one2i (one) {return one % COLS;}
-function one2j (one) {return Math.floor(one / ROWS);}
+function one2j (one) {return Math.floor(one / COLS);}
 
 // PixLoc returns the center of the hall
 function iPixLoc (i) {return CELL_SIZE * i + (HALL_SIZE/2);}
@@ -245,19 +245,31 @@ function resetAll () {
     // reposition monster
     monster.x = iPixLoc(5);
     monster.y = jPixLoc(5);
-    monsterTarget.x = iPixLoc(5);
-    monsterTarget.y = jPixLoc(5);
-    monsterTarget.xPrev = iPixLoc(5);
-    monsterTarget.yPrev = jPixLoc(5.1);
+    initTarget(monster, monsterTarget);
 }
 
+// initialize monster target
+function initTarget (monster, monsterTarget) {
+    var i = xPixInd(monster.x);
+    var j = yPixInd(monster.y);
+    var neighbors = adjacency[two2one(i, j)];
+
+    var rand = randomInt(neighbors.length);
+    var newTarget = neighbors[rand];
+
+    // initialize target
+    monsterTarget.xPrev = monster.x;
+    monsterTarget.yPrev = monster.y;
+    monsterTarget.x = iPixLoc(one2i(newTarget));
+    monsterTarget.y = jPixLoc(one2j(newTarget));
+}
 // update monster target
 function updateTarget (monster, monsterTarget) {
     var iPrev = xPixInd(monsterTarget.xPrev);
     var jPrev = yPixInd(monsterTarget.yPrev);
     var i = xPixInd(monster.x);
     var j = yPixInd(monster.y);
-    var neighbors = adjacency[two2one(i, j)]
+    var neighbors = adjacency[two2one(i, j)];
 
     // remove previous direction from neighbors and check if any left
     neighbors = arrayRemove(neighbors, two2one(iPrev, jPrev));
@@ -468,7 +480,7 @@ play.create = function()
 
     randX = iPixLoc(randomInt(COLS));
     randY = jPixLoc(randomInt(ROWS));
-    succ6 = this.physics.add.image(randX, randY, 'succ6').setScale(0.2);
+    succ6 = this.physics.add.image(randX, randY, 'succ6').setScale(0.1);
 
     randX = iPixLoc(randomInt(COLS));
     randY = jPixLoc(randomInt(ROWS));
@@ -503,14 +515,10 @@ play.create = function()
     player.setCollideWorldBounds(true);
     monster = this.physics.add.sprite(iPixLoc(5), jPixLoc(5), 'wolf');
     monster.setCollideWorldBounds(true);
-    monsterTarget.x = iPixLoc(5);
-    monsterTarget.y = jPixLoc(5);
-    monsterTarget.xPrev = iPixLoc(5);
-    monsterTarget.yPrev = jPixLoc(5.1);
-    console.log(monsterTarget);
+    initTarget(monster, monsterTarget);
 
 
-    blocker = this.add.image(WIDTH/2, HEIGHT/2, 'box').setScale(Math.max(WIDTH, HEIGHT)/ 400);
+    blocker = this.add.image((COLS * CELL_SIZE)/2, HEIGHT/2, 'box').setScale((COLS*CELL_SIZE)/ 400);
 
     spotlight = this.make.sprite({
         x: iPixLoc(0),
