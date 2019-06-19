@@ -17,7 +17,7 @@ var MONSTER_VEL = 125;
 
 // var player;
 var walls;
-var wallsDict = {};
+var wallsList = {};
 var cursors;
 var adjacency;
 var star;
@@ -56,7 +56,7 @@ function arrayRemove(arr, value) {
 // The neighbors array for a given cell contains its neighbors (as integers)
 function initAdjacency () {
     adjacency = []
-    wallsDict = []
+    wallsList = []
 
     for(var one = 0; one < ROWS*COLS; one++) {
         var neighbors = [];
@@ -73,7 +73,7 @@ function initAdjacency () {
             neighbors.push(two2one(i, j+1));
 
         adjacency.push(neighbors);
-        wallsDict.push([]);
+        wallsList.push([]);
     }
 }
 
@@ -119,14 +119,14 @@ function createWall (i, j, orient='tall') {
         var iLoc = iPixLoc(i + 1);
         var jLoc = jPixLoc(j + 0.5);
         var newWall = walls.create(iLoc, jLoc, 'tall').setScale(WALL_SCALE).refreshBody();
-        wallsDict[two2one(i, j)].push(newWall);
+        wallsList[two2one(i, j)].push(newWall);
         removeAdjacency(i, j, i+1, j);
     }
     else if (orient=='flat') {
         var iLoc = iPixLoc(i + 0.5);
         var jLoc = jPixLoc(j + 1);
         var newWall = walls.create(iLoc, jLoc, 'flat').setScale(WALL_SCALE).refreshBody();
-        wallsDict[two2one(i, j)].push(newWall);
+        wallsList[two2one(i, j)].push(newWall);
         removeAdjacency(i, j, i, j+1);
     }
 }
@@ -196,11 +196,11 @@ function blastWalls (i, j) {
 
             console.log("Blasting: " + x + " " + y);
 
-            var thisWalls = wallsDict[two2one(x, y)];
-            console.log(thisWalls)
+            var thisWalls = wallsList[two2one(x, y)];
+            // console.log(thisWalls)
             for (var w = 0; w < thisWalls.length; w++) {
                 var thisWall = thisWalls[w];
-                console.log(thisWall);
+                // console.log(thisWall);
                 thisWall.destroy();
             }
         }
@@ -324,7 +324,7 @@ play.create = function()
     // createBoxWall(4, 7);
 
     divide(0, 0, COLS, ROWS);
-    console.log(wallsDict);
+    // console.log(wallsList);
 
     // randomly generate items
     var randX = iPixLoc(randomInt(COLS)+0.5);
