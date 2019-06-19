@@ -606,6 +606,9 @@ play.update = function() {
 
         monster.anims.play('d', true);
     }
+    else {
+        updateTarget(monster, monsterTarget);
+    }
 
 
     // Player's movements
