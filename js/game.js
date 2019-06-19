@@ -411,6 +411,7 @@ play.preload = function()
     this.load.image('succ10', 'assets/succ10.png');
     this.load.image('succ11', 'assets/succ11.png');
     this.load.image('succ12', 'assets/succ12.png');
+    this.load.image('succ13', 'assets/succ13.png');
     this.load.spritesheet('baby', 'assets/baby.png', { frameWidth: 32.5, frameHeight: 38 });
     this.load.spritesheet('wolf', 'assets/wolf.png', { frameWidth: 48, frameHeight: 35 });
 }
