@@ -511,7 +511,12 @@ play.preload = function()
     this.load.image('tiles', 'assets/desert_tiles.png');
     this.load.tilemapTiledJSON('map', 'assets/desert-score.json');    // tiled background
     this.load.image('number-font', 'assets/numbers.png');         // scoreboard font
-    this.load.audio('steps', 'assets/steps.mp3');                 // footstep sound
+    this.load.audio('steps', 'assets/steps.mp3');                 //  sounds
+    this.load.audio('eating', 'assets/eating.mp3');
+    this.load.audio('lightswitch', 'assets/lightswitch.mp3');
+    this.load.audio('whine', 'assets/whine.mp3');
+    this.load.audio('shiny', 'assets/shiny.mp3');
+    this.load.audio('boom', 'assets/boom.mp3');
     this.load.image('sky', 'assets/sky.png');
     this.load.image('mask', 'assets/mask.png');
     this.load.image('flat', 'assets/flat3.png');
@@ -535,6 +540,11 @@ play.create = function()
     var layer = map.createStaticLayer('Ground', tileset, 0, 0);
 
     this.sound.add('steps');
+    this.sound.add('eating');
+    this.sound.add('lightswitch');
+    this.sound.add('whine');
+    this.sound.add('shiny');
+    this.sound.add('boom');
 
     walls = this.physics.add.staticGroup();
     initAdjacency();
@@ -691,7 +701,7 @@ play.create = function()
     // ----------------------- Scoreboard ----------------------------
     // --------------------------  END -------------------------------
 
-    
+
     // ----------------- Generate Player and Monster -----------------
     player = this.physics.add.sprite(iPixLoc(0), jPixLoc(0), 'baby');
     player.setCollideWorldBounds(true);
@@ -828,7 +838,7 @@ play.update = function() {
     }
     if (Math.abs(player.x - monster.x) < 20  && Math.abs(player.y - monster.y) < 20) {
         if (!INVINCIBLE) {
-            // TODO: actually end game!!!
+            this.sound.play('whine');
             console.log("GAME OVER!");
             resetAll();
             this.scene.start('stop');
@@ -849,6 +859,7 @@ play.update = function() {
     bubble.y = player.y;
     for (var i = 0; i < star.length; i++) {
         if (Math.abs(player.x - star[i].x) < 20  && Math.abs(player.y - star[i].y) < 20) {
+            this.sound.play('shiny');
             starCount++;
             timerStar = TIMER;      // 500 units before not invincible anymore    // TODO: have some glow/visual indication
             bubble.visible = true;
@@ -862,6 +873,7 @@ play.update = function() {
 
     for (var i = 0; i < succ13.length; i++) {
         if (Math.abs(player.x - succ13[i].x) < 20  && Math.abs(player.y - succ13[i].y) < 20) {
+            this.sound.play('eating');
             succ13Count++;
             score += 100;                                   // 100pt / succ13
             succ13[i].x = iPixLoc(randomInt(COLS));
@@ -872,6 +884,7 @@ play.update = function() {
 
     for (var i = 0; i < succ4.length; i++) {
         if (Math.abs(player.x - succ4[i].x) < 20  && Math.abs(player.y - succ4[i].y) < 20) {
+            this.sound.play('eating');
             succ4Count++;
             score += 250;                                   // 250pt / succ4
             succ4[i].x = iPixLoc(randomInt(COLS));
@@ -882,6 +895,7 @@ play.update = function() {
 
     for (var i = 0; i < succ3.length; i++) {
         if (Math.abs(player.x - succ3[i].x) < 20  && Math.abs(player.y - succ3[i].y) < 20) {
+            this.sound.play('eating');
             succ3Count++;
             score += 500;                                   // 500pt / succ3
             succ3[i].x = iPixLoc(randomInt(COLS));
@@ -899,6 +913,7 @@ play.update = function() {
     }
     for (var i = 0; i < torch.length; i++) {
         if (Math.abs(player.x - torch[i].x) < 20  && Math.abs(player.y - torch[i].y) < 20) {
+            this.sound.play('lightswitch');
             // TODO: should also set a timer, after which reverse spotlight scale back to 1.5?
             SPOTLIGHT_SCALE *= 1.5;
             spotlight = spotlight.setScale(SPOTLIGHT_SCALE);
@@ -913,6 +928,7 @@ play.update = function() {
 
     for (var i = 0; i < bomb.length; i++) {
         if (Math.abs(player.x - bomb[i].x) < 20  && Math.abs(player.y - bomb[i].y) < 20) {
+            this.sound.play('boom');
             var x = xPixInd(bomb[i].x);
             var y = yPixInd(bomb[i].y);
             blastWalls(x, y);
