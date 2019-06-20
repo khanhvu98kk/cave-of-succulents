@@ -622,31 +622,6 @@ play.create = function()
     // --------------------------- START ----------------------------------
 
 
-
-    // generate player and monster
-    player = this.physics.add.sprite(iPixLoc(0), jPixLoc(0), 'baby');
-    player.setCollideWorldBounds(true);
-    monster = this.physics.add.sprite(iPixLoc(5), jPixLoc(5), 'wolf');
-    monster.setCollideWorldBounds(true);
-    initTarget(monster, monsterTarget);
-
-    bubble = this.physics.add.sprite(player.x, player.y, 'bubble').setScale(0.3);
-    bubble.visible = false;
-
-    blocker = this.add.image((COLS * CELL_SIZE)/2 - WALL_WIDTH, HEIGHT-(COLS * CELL_SIZE)/2 - WALL_WIDTH, 'blocker').setScale((COLS*CELL_SIZE)/ 450);
-
-    spotlight = this.make.sprite({
-        x: iPixLoc(0),
-        y: jPixLoc(0),
-        key: 'mask',
-        add: false
-    }).setScale(SPOTLIGHT_SIZE/SPOTLIGHT_ORIG);
-
-    blocker.mask = new Phaser.Display.Masks.BitmapMask(this, spotlight);
-    blocker.mask.invertAlpha = true;
-    blocker.visible = IS_DARK;
-
-
     // Player's movements
     // --------------------------  START ------------------------------
     this.anims.create({
@@ -749,8 +724,34 @@ play.create = function()
     bmtTorch = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 800, 'number-font', 'X0');
 
     // ----------------------- Scoreboard ----------------------------
-    // --------------------------  END ------------------------------
+    // --------------------------  END -------------------------------
 
+    
+    // ----------------- Generate Player and Monster -----------------
+    player = this.physics.add.sprite(iPixLoc(0), jPixLoc(0), 'baby');
+    player.setCollideWorldBounds(true);
+    monster = this.physics.add.sprite(iPixLoc(5), jPixLoc(5), 'wolf');
+    monster.setCollideWorldBounds(true);
+    initTarget(monster, monsterTarget);
+
+    bubble = this.physics.add.sprite(player.x, player.y, 'bubble').setScale(0.3);
+    bubble.visible = false;
+
+    blocker = this.add.image((COLS * CELL_SIZE)/2 - WALL_WIDTH, HEIGHT-(COLS * CELL_SIZE)/2 - WALL_WIDTH, 'blocker').setScale((COLS*CELL_SIZE)/ 450);
+
+    spotlight = this.make.sprite({
+        x: iPixLoc(0),
+        y: jPixLoc(0),
+        key: 'mask',
+        add: false
+    }).setScale(SPOTLIGHT_SIZE/SPOTLIGHT_ORIG);
+
+    blocker.mask = new Phaser.Display.Masks.BitmapMask(this, spotlight);
+    blocker.mask.invertAlpha = true;
+    blocker.visible = IS_DARK;
+
+    // ----------------- Generate Player and Monster -----------------
+    // --------------------------  END -------------------------------
 
 
     cursors = this.input.keyboard.createCursorKeys();
