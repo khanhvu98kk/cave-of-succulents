@@ -13,12 +13,13 @@ var ITEMS = 3;
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
 var SPOTLIGHT_SCALE = 1;
-var IS_DARK = true;
+var IS_DARK = false;
 var INVINCIBLE = false;
 var TIMER = 1000;
 
 var BABY_VEL = 150;
 var MONSTER_VEL = 100;
+var ENDX = 1400, ENDY = 930; 
 //---------------------------- Game constants -------------------------------
 //---------------------------- END -------------------------------
 
@@ -311,19 +312,20 @@ function updateTarget (monster, monsterTarget) {
     monsterTarget.y = jPixLoc(one2j(newTarget));
 }
 
-//---------------------------- Helper Functions -------------------------------
-// -------------------------------- END -------------------------------------
+//---------------------------- Helper Functions ---------------------------------------
+// -------------------------------- END ----------------------------------------------
 
 
-// -------------------------- Start Scene ------------------------------
+// ------------------------------- Start Scene ------------------------------------------
 // -------------------------------- START -------------------------------------
 var start = new Phaser.Scene('start');
 var button;
 var timer = 0;
 var succ1, succ2;
 var yDown = HEIGHT * 2/3;
-var yUp = HEIGHT * 1.8/3
+var yUp = HEIGHT * 1.8/3;
 
+console.log(yUp, yDown);
 start.preload = function () {
     this.load.image('start', 'assets/start.png');
     this.load.image('succ1', 'assets/succ1.png');
@@ -337,8 +339,8 @@ start.create = function () {
     start.cameras.main.setBackgroundColor('#000000')
     // this.add.image(WIDTH/2, HEIGHT/3, 'gameover').setScale(0.5);
     // this.scene.bringToTop('stop');
-    succ1 = this.add.image(WIDTH/4, HEIGHT * 2/3, 'succ1').setScale(0.5);
-    succ2 = this.add.image(WIDTH * 3/4, HEIGHT * 2/3, 'succ2').setScale(0.5);
+    succ1 = this.add.image(WIDTH/4, yUp, 'succ1').setScale(0.5);
+    succ2 = this.add.image(WIDTH * 3/4, yDown, 'succ2').setScale(0.5);
     this.add.image(WIDTH/2, HEIGHT/3 - 50, 'logo1').setScale(0.75);
     this.add.image(WIDTH/2, HEIGHT/3 + 80, 'logo2').setScale(0.75);
     button = this.add.image(WIDTH/2, HEIGHT * 2/3, 'start').setScale(0.5);
@@ -408,6 +410,48 @@ stop.update = function() {
 // -------------------------------- END -------------------------------------
 
 
+
+
+// ----------------------------------- Win Scene -----------------------------------
+// ------------------------------------ START -------------------------------------
+var win = new Phaser.Scene('win');
+var button, heart;
+var timer = 0;
+var yDown = HEIGHT /3 - 20;
+var yUp = HEIGHT / 4 + 20;
+
+win.preload = function () {
+    this.load.image('winSucc', 'assets/original.png');
+    this.load.image('heart', 'assets/heart.png');
+    this.load.image('reset', 'assets/reset.png');
+};
+
+win.create = function () {
+    console.log(this.sys.settings.key, 'is alive');
+    win.cameras.main.setBackgroundColor('#000000');
+    heart = this.add.image(WIDTH/2, HEIGHT/4, 'heart').setScale(0.85);
+    this.add.image(WIDTH/2, HEIGHT/2, 'winSucc').setScale(0.85);
+
+    button = this.add.image(WIDTH/2, HEIGHT * 4/5, 'reset').setScale(0.5);
+    button.setInteractive();
+};
+
+win.update = function() {
+    button.on('pointerdown', () => { window.location.reload(); });
+    if (timer % 20 == 0) {
+        if ((timer/20) % 2 == 0)
+            heart.y = yUp;
+        else
+            heart.y = yDown;
+    }
+    timer++;
+}
+// ------------------------------------- Win Scene ------------------------------
+// --------------------------------------- END -------------------------------------
+
+
+
+
 // -------------------------- Play Scene ------------------------------
 // -------------------------------- END -------------------------------------
 
@@ -451,20 +495,9 @@ play.preload = function()
 
 play.create = function()
 {
-    // function addItem(item, name, scale) {              // doesn't work! Can't automate the adding of items?
-    //   console.log(item);
-    //   var randX = iPixLoc(randomInt(COLS)+0.5);
-    //   var randY = jPixLoc(randomInt(ROWS)+0.5);
-    //   item = this.physics.add.image(randX, randY, name).setScale(scale);
-    // }
-
     var map = this.make.tilemap({key: 'map'});                  // desert background
     var tileset = map.addTilesetImage("Desert", "tiles");
     var layer = map.createStaticLayer('Ground', tileset, 0, 0);
-
-    // this.add.image(WIDTH/2, HEIGHT/2, 'sky').setScale(1.5);
-
-    // TODO: once the maze is done, add this back in for not walking through walls
 
     walls = this.physics.add.staticGroup();
     initAdjacency();
@@ -473,9 +506,8 @@ play.create = function()
     divide(0, 0, COLS, ROWS);
     createLimit();
 
-    // console.log(wallsList);
-
-    // randomly generate items
+    //------------------------ adding randomly generated items ----------------------------
+    //-------------------------------- START ----------------------------------
     var randX, randY;
     star = [];
     for (var i = 0; i < ITEMS; i++) {
@@ -514,8 +546,6 @@ play.create = function()
         succ11.push(temp);
     }
 
-
-
     // randX = iPixLoc(randomInt(COLS));
     // randY = jPixLoc(randomInt(ROWS));
     // succ3 = this.physics.add.image(randX, randY, 'succ3').setScale(0.07);
@@ -544,7 +574,7 @@ play.create = function()
     // randY = jPixLoc(randomInt(ROWS));
     // succ12 = this.physics.add.image(randX, randY, 'succ12').setScale(1);
 
-    // ------------------adding randomly generated items ---------------------
+    // ------------------ adding randomly generated items ---------------------
     // --------------------------- START ----------------------------------
 
 
@@ -780,6 +810,11 @@ play.update = function() {
     // handling collision
     // console.log(player.x, player.y);
     // console.log(monster.x, monster.y);
+    if (Math.abs(player.x - ENDX) < 20 && Math.abs(player.y - ENDY) < 20) {
+        this.scene.start('win');
+        this.scene.bringToTop('win');
+        this.scene.pause('play');
+    }
     if (Math.abs(player.x - monster.x) < 20  && Math.abs(player.y - monster.y) < 20) {
         if (!INVINCIBLE) {
             // TODO: actually end game!!!
@@ -873,7 +908,7 @@ play.update = function() {
     }
     bmtBomb.setText('X' + bombCount.toString());
 
-    bmtScore.setText(score.toString());   // update scoreboard 
+    bmtScore.setText(score.toString());   // update scoreboard
 
 }
 // -------------------------- Play Scene ------------------------------
@@ -892,7 +927,7 @@ var config = {
             debug: false
         }
     },
-    scene: [ play, start, stop ]
+    scene: [ play, start, stop, win ]
 };
 
 var game = new Phaser.Game(config);
