@@ -37,6 +37,7 @@ var torchCount = 0;
 var succ7, succ8, succ11;
 var succ7Count = 0, succ8Count = 0, succ11Count = 0;
 var succ3, succ4, succ5, succ6, succ9, succ10, succ12;
+var score = 0;
 
 var blocker;
 var spotlight;
@@ -410,25 +411,39 @@ stop.update = function() {
 // ----------------------------------- Win Scene -----------------------------------
 // ------------------------------------ START -------------------------------------
 var win = new Phaser.Scene('win');
-var button, heart;
+var button, heart, bmt;
 var timer = 0;
-var yDown = HEIGHT /3 - 20;
-var yUp = HEIGHT / 4 + 20;
+var yDown = HEIGHT / 4;
+var yUp = HEIGHT / 4 - 20;
 
 win.preload = function () {
     this.load.image('winSucc', 'assets/original.png');
     this.load.image('heart', 'assets/heart.png');
     this.load.image('reset', 'assets/reset.png');
+    this.load.image('number-font', 'assets/numbers.png');
 };
 
 win.create = function () {
     console.log(this.sys.settings.key, 'is alive');
     win.cameras.main.setBackgroundColor('#000000');
-    heart = this.add.image(WIDTH/2, HEIGHT/4, 'heart').setScale(0.85);
-    this.add.image(WIDTH/2, HEIGHT/2, 'winSucc').setScale(0.85);
+    heart = this.add.image(WIDTH/2, yDown, 'heart').setScale(0.85);
+    this.add.image(WIDTH/2, HEIGHT/3 + 100, 'winSucc').setScale(0.85);
 
-    button = this.add.image(WIDTH/2, HEIGHT * 4/5, 'reset').setScale(0.5);
+    button = this.add.image(WIDTH/2, HEIGHT * 4/5 + 30, 'reset').setScale(0.5);
     button.setInteractive();
+
+    var fontConfig = {
+        image: 'number-font',
+        width: 20,
+        height: 26,
+        chars: '0123456789X ',
+        charsPerRow: 6,
+        lineSpacing: 0
+    }
+    this.cache.bitmapFont.add('number-font', Phaser.GameObjects.RetroFont.Parse(this, fontConfig));
+    this.add.text(WIDTH/2 - 85, HEIGHT * 2/3, 'Score:').setScale(2);
+    bmt = this.add.bitmapText(WIDTH/2 + 35, HEIGHT * 2/3, 'number-font', '0');
+    bmt.setText(score.toString());
 };
 
 win.update = function() {
@@ -453,8 +468,7 @@ win.update = function() {
 var play = new Phaser.Scene('play');
 var player, monster, bubble;
 var monsterTarget = [];
-var score = 0;
-var bmtSucc7, bmtSucc8, bmtSucc11, bmtScore, bmtStar, bmtBomb, bmtTorch;
+var bmtSucc7, bmtSucc8, bmtSucc11, bmtStar, bmtBomb, bmtTorch, bmtScore;
 var timerTorch = 0, timerStar = 0;
 
 play.preload = function()
@@ -670,28 +684,17 @@ play.create = function()
     // ----------------------- Scoreboard ----------------------------
     // --------------------------  START -----------------------------
     var fontConfig = {
-        // image
         image: 'number-font',
-        // offset: {
-        //     x: 0,
-        //     y: 0
-        // },
-        // characters
         width: 20,
         height: 26,
         chars: '0123456789X ',
         charsPerRow: 6,
-        // spacing
-        // spacing: {
-        //     x: 0,
-        //     y: 0
-        // },
         lineSpacing: 0
     }
     this.cache.bitmapFont.add('number-font', Phaser.GameObjects.RetroFont.Parse(this, fontConfig));
 
     this.add.text(1480, 40, 'Score:').setScale(2);
-    bmtScore = this.add.bitmapText((COLS+2) * CELL_SIZE - 147, 80, 'number-font', '0')
+    bmtScore = this.add.bitmapText((COLS+2) * CELL_SIZE - 147, 80, 'number-font', '0');
 
     this.add.image((COLS+2) * CELL_SIZE - 125, 180, 'succ13').setScale(0.12);
     bmtSucc7 = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 180, 'number-font', 'X0');
@@ -929,7 +932,7 @@ var config = {
             debug: false
         }
     },
-    scene: [ play, start, stop, win ]
+    scene: [ win ]
 };
 
 var game = new Phaser.Game(config);
