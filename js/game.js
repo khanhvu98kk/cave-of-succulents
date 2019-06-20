@@ -8,10 +8,14 @@ var CELL_SIZE = HALL_SIZE + WALL_WIDTH;
 var WIDTH = (COLS+2)*CELL_SIZE;
 var HEIGHT = ROWS*CELL_SIZE;
 var WALL_SCALE = 0.22;
+var ITEMS = 3;
 
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
+var SPOTLIGHT_SCALE = 1;
 var IS_DARK = true;
+var INVINCIBLE = false;
+var TIMER = 1000;
 
 var BABY_VEL = 150;
 var MONSTER_VEL = 100;
@@ -27,7 +31,11 @@ var star;
 var starCount = 0;
 var bomb;
 var bombCount = 0;
-var succ3, succ4, succ5, succ6, succ7, succ8, succ9, succ10, succ11, succ12;
+var torch;
+var torchCount = 0;
+var succ7, succ8, succ11;
+var succ7Count = 0, succ8Count = 0, succ11Count = 0;
+var succ3, succ4, succ5, succ6, succ9, succ10, succ12;
 
 var blocker;
 var spotlight;
@@ -406,11 +414,15 @@ stop.update = function() {
 var play = new Phaser.Scene('play');
 var player, monster;
 var monsterTarget = [];
+var score = 0;
+var bmtSucc7, bmtSucc8, bmtSucc11, bmtScore, bmtStar, bmtBomb, bmtTorch;
+var timerTorch = 0, timerStar = 0;
 
 play.preload = function()
 {
     this.load.image('tiles', 'assets/desert_tiles.png');
     this.load.tilemapTiledJSON('map', 'assets/desert-score.json');
+    this.load.image('number-font', 'assets/numbers.png');
 
     this.load.image('sky', 'assets/sky.png');
     this.load.image('mask', 'assets/mask.png');
@@ -419,6 +431,7 @@ play.preload = function()
     this.load.image('blocker', 'assets/blocker.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
+    this.load.image('torch', 'assets/torch.png');
     this.load.image('succ1', 'assets/succ1.png');
     this.load.image('succ2', 'assets/succ2.png');
     this.load.image('succ3', 'assets/succ3.png');
@@ -463,53 +476,74 @@ play.create = function()
     // console.log(wallsList);
 
     // randomly generate items
-    var randX = iPixLoc(randomInt(COLS));
-    var randY = jPixLoc(randomInt(ROWS));
-    star = this.physics.add.image(randX, randY, 'star').setScale(1.5);
+    var randX, randY;
+    star = [];
+    for (var i = 0; i < ITEMS; i++) {
+        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        var temp = this.physics.add.image(randX, randY, 'star').setScale(0.05);
+        star.push(temp);
+    }
+    bomb = [];
+    for (var i = 0; i < ITEMS; i++) {
+        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        var temp = this.physics.add.image(randX, randY, 'bomb').setScale(0.13);
+        bomb.push(temp);
+    }
+    torch = [];
+    for (var i = 0; i < ITEMS; i++) {
+        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        var temp = this.physics.add.image(randX, randY, 'torch').setScale(0.13);
+        torch.push(temp);
+    }
+    succ7 = [];
+    for (var i = 0; i < ITEMS; i++) {
+        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        var temp = this.physics.add.image(randX, randY, 'succ7').setScale(1.5);
+        succ7.push(temp);
+    }
+    succ8 = [];
+    for (var i = 0; i < ITEMS; i++) {
+        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        var temp = this.physics.add.image(randX, randY, 'succ8').setScale(1.5);
+        succ8.push(temp);
+    }
+    succ11 = [];
+    for (var i = 0; i < ITEMS; i++) {
+        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        var temp = this.physics.add.image(randX, randY, 'succ11').setScale(1.5);
+        succ11.push(temp);
+    }
 
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    bomb = this.physics.add.image(randX, randY, 'bomb').setScale(1.5);
 
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    succ3 = this.physics.add.image(randX, randY, 'succ3').setScale(0.07);
 
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    succ4 = this.physics.add.image(randX, randY, 'succ4').setScale(0.1);
+    // randX = iPixLoc(randomInt(COLS));
+    // randY = jPixLoc(randomInt(ROWS));
+    // succ3 = this.physics.add.image(randX, randY, 'succ3').setScale(0.07);
+    //
+    // randX = iPixLoc(randomInt(COLS));
+    // randY = jPixLoc(randomInt(ROWS));
+    // succ4 = this.physics.add.image(randX, randY, 'succ4').setScale(0.1);
+    //
+    // randX = iPixLoc(randomInt(COLS));
+    // randY = jPixLoc(randomInt(ROWS));
+    // succ5 = this.physics.add.image(randX, randY, 'succ5').setScale(0.2);
+    //
+    // randX = iPixLoc(randomInt(COLS));
+    // randY = jPixLoc(randomInt(ROWS));
+    // succ6 = this.physics.add.image(randX, randY, 'succ6').setScale(0.1);
 
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    succ5 = this.physics.add.image(randX, randY, 'succ5').setScale(0.2);
+    // randX = iPixLoc(randomInt(COLS));
+    // randY = jPixLoc(randomInt(ROWS));
+    // succ9 = this.physics.add.image(randX, randY, 'succ9').setScale(1);
+    //
+    // randX = iPixLoc(randomInt(COLS));
+    // randY = jPixLoc(randomInt(ROWS));
+    // succ10 = this.physics.add.image(randX, randY, 'succ10').setScale(1);
 
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    succ6 = this.physics.add.image(randX, randY, 'succ6').setScale(0.1);
+    // randX = iPixLoc(randomInt(COLS));
+    // randY = jPixLoc(randomInt(ROWS));
+    // succ12 = this.physics.add.image(randX, randY, 'succ12').setScale(1);
 
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    succ7 = this.physics.add.image(randX, randY, 'succ7').setScale(1);
-
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    succ8 = this.physics.add.image(randX, randY, 'succ8').setScale(1);
-
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    succ9 = this.physics.add.image(randX, randY, 'succ9').setScale(1);
-
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    succ10 = this.physics.add.image(randX, randY, 'succ10').setScale(1);
-
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    succ11 = this.physics.add.image(randX, randY, 'succ11').setScale(1);
-
-    randX = iPixLoc(randomInt(COLS));
-    randY = jPixLoc(randomInt(ROWS));
-    succ12 = this.physics.add.image(randX, randY, 'succ12').setScale(1);
     // ------------------adding randomly generated items ---------------------
     // --------------------------- START ----------------------------------
 
@@ -605,6 +639,55 @@ play.create = function()
     // --------------------------  END ------------------------------
 
 
+    // ----------------------- Scoreboard ----------------------------
+    // --------------------------  START -----------------------------
+    var fontConfig = {
+        // image
+        image: 'number-font',
+        // offset: {
+        //     x: 0,
+        //     y: 0
+        // },
+        // characters
+        width: 20,
+        height: 26,
+        chars: '0123456789X ',
+        charsPerRow: 6,
+        // spacing
+        // spacing: {
+        //     x: 0,
+        //     y: 0
+        // },
+        lineSpacing: 0
+    }
+    this.cache.bitmapFont.add('number-font', Phaser.GameObjects.RetroFont.Parse(this, fontConfig));
+
+    this.add.text(1480, 40, 'Score:').setScale(2);
+    bmtScore = this.add.bitmapText((COLS+2) * CELL_SIZE - 147, 80, 'number-font', '0')
+
+    this.add.image((COLS+2) * CELL_SIZE - 125, 180, 'succ13').setScale(0.12);
+    bmtSucc7 = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 180, 'number-font', 'X0');
+
+    this.add.image((COLS+2) * CELL_SIZE - 125, 300, 'succ4').setScale(0.2);
+    bmtSucc8 = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 300, 'number-font', 'X0');
+
+    this.add.image((COLS+2) * CELL_SIZE - 125, 425, 'succ3').setScale(0.12);
+    bmtSucc11 = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 425, 'number-font', 'X0');
+
+    this.add.image((COLS+2) * CELL_SIZE - 125, 555, 'star').setScale(0.1);
+    bmtStar = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 555, 'number-font', 'X0');
+
+    this.add.image((COLS+2) * CELL_SIZE - 125, 675, 'bomb').setScale(0.2);
+    bmtBomb = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 675, 'number-font', 'X0');
+
+    this.add.image((COLS+2) * CELL_SIZE - 125, 800, 'torch').setScale(0.2);
+    bmtTorch = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 800, 'number-font', 'X0');
+
+    // ----------------------- Scoreboard ----------------------------
+    // --------------------------  END ------------------------------
+
+
+
     cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.add.collider(player, walls);
@@ -697,46 +780,100 @@ play.update = function() {
     // handling collision
     // console.log(player.x, player.y);
     // console.log(monster.x, monster.y);
-    if (Math.abs(player.x - monster.x) < 20  &&
-        Math.abs(player.y - monster.y) < 20) {
-
-        // TODO: actually end game!!!
-        console.log("GAME OVER!");
-        resetAll();
-        this.scene.start('stop');
-        this.scene.bringToTop('stop');
-        this.scene.pause('play');
+    if (Math.abs(player.x - monster.x) < 20  && Math.abs(player.y - monster.y) < 20) {
+        if (!INVINCIBLE) {
+            // TODO: actually end game!!!
+            console.log("GAME OVER!");
+            resetAll();
+            this.scene.start('stop');
+            this.scene.bringToTop('stop');
+            this.scene.pause('play');
+        }
     }
 
-    if (Math.abs(player.x - star.x) < 20  && Math.abs(player.y - star.y) < 20) {
-
-        if(starCount > 5 && star.visible) {
-            star.visible = false;
-            console.log("SHINY!");
-
-            spotlight = spotlight.setScale(1.5)
-        }
-        else {
+    if (timerStar > 0)
+        timerStar--;
+    else if (timerStar == 0){
+        INVINCIBLE = false;
+        console.log(INVINCIBLE);
+        timerStar--;
+    }
+    for (var i = 0; i < star.length; i++) {
+        if (Math.abs(player.x - star[i].x) < 20  && Math.abs(player.y - star[i].y) < 20) {
             starCount++;
+            timerStar = TIMER;      // 500 units before not invincible anymore    // TODO: have some glow/visual indication
+            INVINCIBLE = true;
+            console.log(INVINCIBLE);
+            star[i].x = iPixLoc(randomInt(COLS));
+            star[i].y = iPixLoc(randomInt(ROWS));
         }
     }
+    bmtStar.setText('X' + starCount.toString());
 
-    if (Math.abs(player.x - bomb.x) < 20  && Math.abs(player.y - bomb.y) < 20) {
-
-        if(bombCount > 5 && bomb.visible) {
-            bomb.visible = false;
-            console.log("BOOM!");
-
-            var i = xPixInd(bomb.x);
-            var j = yPixInd(bomb.y);
-
-            blastWalls(i, j);
+    for (var i = 0; i < succ7.length; i++) {
+        if (Math.abs(player.x - succ7[i].x) < 20  && Math.abs(player.y - succ7[i].y) < 20) {
+            succ7Count++;
+            score += 100;                                   // 100pt / succ7
+            succ7[i].x = iPixLoc(randomInt(COLS));
+            succ7[i].y = iPixLoc(randomInt(ROWS));
         }
-        else {
+    }
+    bmtSucc7.setText('X' + succ7Count.toString());
+
+    for (var i = 0; i < succ8.length; i++) {
+        if (Math.abs(player.x - succ8[i].x) < 20  && Math.abs(player.y - succ8[i].y) < 20) {
+            succ8Count++;
+            score += 250;                                   // 250pt / succ8
+            succ8[i].x = iPixLoc(randomInt(COLS));
+            succ8[i].y = iPixLoc(randomInt(ROWS));
+        }
+    }
+    bmtSucc8.setText('X' + succ8Count.toString());
+
+    for (var i = 0; i < succ11.length; i++) {
+        if (Math.abs(player.x - succ11[i].x) < 20  && Math.abs(player.y - succ11[i].y) < 20) {
+            succ11Count++;
+            score += 500;                                   // 500pt / succ11
+            succ11[i].x = iPixLoc(randomInt(COLS));
+            succ11[i].y = iPixLoc(randomInt(ROWS));
+        }
+    }
+    bmtSucc11.setText('X' + succ11Count.toString());
+
+    if (timerTorch > 0)
+        timerTorch--;
+    else if (timerTorch == 0) {
+        SPOTLIGHT_SCALE = 1;
+        spotlight = spotlight.setScale(SPOTLIGHT_SCALE);
+        timerTorch--;
+    }
+    for (var i = 0; i < torch.length; i++) {
+        if (Math.abs(player.x - torch[i].x) < 20  && Math.abs(player.y - torch[i].y) < 20) {
+            // TODO: should also set a timer, after which reverse spotlight scale back to 1.5?
+            SPOTLIGHT_SCALE *= 1.5;
+            spotlight = spotlight.setScale(SPOTLIGHT_SCALE);
+            timerTorch = TIMER;
+            torchCount++;
+            torch[i].x = iPixLoc(randomInt(COLS));
+            torch[i].y = iPixLoc(randomInt(ROWS));
+        }
+    }
+    bmtTorch.setText('X' + torchCount.toString());
+
+
+    for (var i = 0; i < bomb.length; i++) {
+        if (Math.abs(player.x - bomb[i].x) < 20  && Math.abs(player.y - bomb[i].y) < 20) {
+            var x = xPixInd(bomb[i].x);
+            var y = yPixInd(bomb[i].y);
+            blastWalls(x, y);
             bombCount++;
+            bomb[i].x = iPixLoc(randomInt(COLS));
+            bomb[i].y = iPixLoc(randomInt(ROWS));
         }
-
     }
+    bmtBomb.setText('X' + bombCount.toString());
+
+    bmtScore.setText(score.toString());   // update scoreboard 
 
 }
 // -------------------------- Play Scene ------------------------------
@@ -759,20 +896,3 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
-
-
-// var config1 = {
-//     type: Phaser.AUTO,
-//     width: WIDTH,
-//     height: HEIGHT / 5,
-//     physics: {
-//         default: 'arcade',
-//         arcade: {
-//             gravity: { y: 0 },
-//             debug: false
-//         }
-//     },
-//     scene: [ stop ]
-// };
-//
-// var board = new Phaser.Game(config1);
