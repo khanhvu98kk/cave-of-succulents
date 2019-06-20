@@ -13,7 +13,7 @@ var ITEMS = 3;
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
 var SPOTLIGHT_SCALE = 1;
-var IS_DARK = false;
+var IS_DARK = true;
 var INVINCIBLE = false;
 var TIMER = 1000;
 
