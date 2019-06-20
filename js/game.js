@@ -8,7 +8,7 @@ var CELL_SIZE = HALL_SIZE + WALL_WIDTH;
 var WIDTH = (COLS+2)*CELL_SIZE;
 var HEIGHT = ROWS*CELL_SIZE;
 var WALL_SCALE = 0.22;
-var ITEMS = 3;
+var ITEMS = 2;
 
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
@@ -34,9 +34,8 @@ var bomb;
 var bombCount = 0;
 var torch;
 var torchCount = 0;
-var succ7, succ8, succ11;
-var succ7Count = 0, succ8Count = 0, succ11Count = 0;
-var succ3, succ4, succ5, succ6, succ9, succ10, succ12;
+var succ3Count = 0, succ4Count = 0, succ13Count = 0;
+var succ3, succ4, succ13;
 var score = 0;
 
 var blocker;
@@ -322,37 +321,72 @@ function updateTarget (monster, monsterTarget) {
 var start = new Phaser.Scene('start');
 var button;
 var timer = 0;
-var succ1, succ2;
-var yDown = HEIGHT * 2/3;
-var yUp = HEIGHT * 1.8/3;
+var succ1, succ2, logo1, logo2;
+var yDown = HEIGHT * 2 / 3;
+var yUp = HEIGHT * 1.8 /3;
 
 start.preload = function () {
     this.load.image('start', 'assets/start.png');
+    this.load.image('instr', 'assets/instr.png');
     this.load.image('succ1', 'assets/succ1.png');
     this.load.image('succ2', 'assets/succ2.png');
     this.load.image('logo1', 'assets/logo1.png');
     this.load.image('logo2', 'assets/logo2.png');
+    this.load.image('succ4', 'assets/succ4.png');
+    this.load.image('succ3', 'assets/succ3.png');
+    this.load.image('succ13', 'assets/succ13.png');
+    this.load.image('bomb', 'assets/bomb.png');
+    this.load.image('star', 'assets/star.png');
+    this.load.image('torch', 'assets/torch.png');
 };
 
 start.create = function () {
     console.log(this.sys.settings.key, 'is alive');
     start.cameras.main.setBackgroundColor('#000000')
-    // this.add.image(WIDTH/2, HEIGHT/3, 'gameover').setScale(0.5);
     // this.scene.bringToTop('stop');
-    succ1 = this.add.image(WIDTH/4, yUp, 'succ1').setScale(0.5);
+    succ1 = this.add.image(WIDTH * 1/4, yUp, 'succ1').setScale(0.5);
     succ2 = this.add.image(WIDTH * 3/4, yDown, 'succ2').setScale(0.5);
-    this.add.image(WIDTH/2, HEIGHT/3 - 50, 'logo1').setScale(0.75);
-    this.add.image(WIDTH/2, HEIGHT/3 + 80, 'logo2').setScale(0.75);
-    button = this.add.image(WIDTH/2, HEIGHT * 2/3, 'start').setScale(0.5);
-    button.setInteractive();
+    logo1 = this.add.image(WIDTH/2, HEIGHT/3 - 50, 'logo1').setScale(0.75);
+    logo2 = this.add.image(WIDTH/2, HEIGHT/3 + 80, 'logo2').setScale(0.75);
+
+    instrBtn = this.add.image(WIDTH/2, HEIGHT * 2/3 - 50, 'instr').setScale(0.4);
+    instrBtn.setInteractive();
+    startBtn = this.add.image(WIDTH/2, HEIGHT * 2/3 + 50, 'start').setScale(0.5);
+    startBtn.setInteractive();
 };
 
 start.update = function() {
-    button.on('pointerdown', () => {
+    startBtn.on('pointerdown', () => {
           // this.scene.launch('play');
           // this.scene.bringToTop('play');
           this.scene.resume('play');
           this.scene.stop('start');
+        });
+    instrBtn.on('pointerdown', () => {
+          logo1.destroy(start);
+          logo2.destroy(start);
+          succ1.destroy(start);
+          succ2.destroy(start);
+          instrBtn.destroy(start);
+          this.add.text(50, 50, 'Little Red (or Blue) Riding Hood is stuck in a cave!').setScale(2);
+          this.add.text(50, 100, 'Help her solve this maze, and escape from the Big Bad Wolf.').setScale(2);
+          this.add.text(50, 150, 'On the way, collect these succulents for points and items for power-ups:').setScale(2);
+
+          this.add.image(200, 300, 'succ13').setScale(0.12);
+          this.add.text(300, 300, 'equals 100 pts').setScale(2);
+          this.add.image(900, 300, 'star').setScale(0.1);
+          this.add.text(1000, 275, 'makes invincible').setScale(2);
+          this.add.text(1000, 300, 'against Wolf').setScale(2);
+
+          this.add.image(200, 425, 'succ4').setScale(0.2);
+          this.add.text(300, 425, 'equals 200 pts').setScale(2);
+          this.add.image(900, 425, 'bomb').setScale(0.2);
+          this.add.text(1000, 425, 'blasts walls').setScale(2);
+
+          this.add.image(200, 550, 'succ3').setScale(0.12);
+          this.add.text(300, 550, 'equals 200 pts').setScale(2);
+          this.add.image(900, 550, 'torch').setScale(0.2);
+          this.add.text(1000, 550, 'increases vision').setScale(2);
         });
     if (timer % 20 == 0) {
         if ((timer/20) % 2 == 0) {
@@ -413,8 +447,8 @@ stop.update = function() {
 var win = new Phaser.Scene('win');
 var button, heart, bmt;
 var timer = 0;
-var yDown = HEIGHT / 4;
-var yUp = HEIGHT / 4 - 20;
+var down = HEIGHT / 4;
+var up = HEIGHT / 4 - 20;
 
 win.preload = function () {
     this.load.image('winSucc', 'assets/original.png');
@@ -450,9 +484,9 @@ win.update = function() {
     button.on('pointerdown', () => { window.location.reload(); });
     if (timer % 20 == 0) {
         if ((timer/20) % 2 == 0)
-            heart.y = yUp;
+            heart.y = up;
         else
-            heart.y = yDown;
+            heart.y = down;
     }
     timer++;
 }
@@ -468,7 +502,7 @@ win.update = function() {
 var play = new Phaser.Scene('play');
 var player, monster, bubble;
 var monsterTarget = [];
-var bmtSucc7, bmtSucc8, bmtSucc11, bmtStar, bmtBomb, bmtTorch, bmtScore;
+var bmtSucc13, bmtSucc4, bmtSucc3, bmtStar, bmtBomb, bmtTorch, bmtScore;
 var timerTorch = 0, timerStar = 0;
 
 play.preload = function()
@@ -485,18 +519,18 @@ play.preload = function()
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('torch', 'assets/torch.png');
-    this.load.image('succ1', 'assets/succ1.png');
-    this.load.image('succ2', 'assets/succ2.png');
+    // this.load.image('succ1', 'assets/succ1.png');
+    // this.load.image('succ2', 'assets/succ2.png');
     this.load.image('succ3', 'assets/succ3.png');
     this.load.image('succ4', 'assets/succ4.png');
-    this.load.image('succ5', 'assets/succ5.png');
-    this.load.image('succ6', 'assets/succ6.png');
-    this.load.image('succ7', 'assets/succ7.png');
-    this.load.image('succ8', 'assets/succ8.png');
-    this.load.image('succ9', 'assets/succ9.png');
-    this.load.image('succ10', 'assets/succ10.png');
-    this.load.image('succ11', 'assets/succ11.png');
-    this.load.image('succ12', 'assets/succ12.png');
+    // this.load.image('succ5', 'assets/succ5.png');
+    // this.load.image('succ6', 'assets/succ6.png');
+    // this.load.image('succ7', 'assets/succ7.png');
+    // this.load.image('succ8', 'assets/succ8.png');
+    // this.load.image('succ9', 'assets/succ9.png');
+    // this.load.image('succ10', 'assets/succ10.png');
+    // this.load.image('succ11', 'assets/succ11.png');
+    // this.load.image('succ12', 'assets/succ12.png');
     this.load.image('succ13', 'assets/succ13.png');
     this.load.image('bubble', 'assets/bubble.png');
     this.load.spritesheet('baby', 'assets/baby.png', { frameWidth: 32.5, frameHeight: 38 });
@@ -537,23 +571,23 @@ play.create = function()
         var temp = this.physics.add.image(randX, randY, 'torch').setScale(0.13);
         torch.push(temp);
     }
-    succ7 = [];
+    succ13 = [];
     for (var i = 0; i < ITEMS; i++) {
         randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
-        var temp = this.physics.add.image(randX, randY, 'succ7').setScale(1.5);
-        succ7.push(temp);
+        var temp = this.physics.add.image(randX, randY, 'succ13').setScale(0.06);
+        succ13.push(temp);
     }
-    succ8 = [];
+    succ4 = [];
     for (var i = 0; i < ITEMS; i++) {
         randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
-        var temp = this.physics.add.image(randX, randY, 'succ8').setScale(1.5);
-        succ8.push(temp);
+        var temp = this.physics.add.image(randX, randY, 'succ4').setScale(0.1);
+        succ4.push(temp);
     }
-    succ11 = [];
+    succ3 = [];
     for (var i = 0; i < ITEMS; i++) {
         randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
-        var temp = this.physics.add.image(randX, randY, 'succ11').setScale(1.5);
-        succ11.push(temp);
+        var temp = this.physics.add.image(randX, randY, 'succ3').setScale(0.06);
+        succ3.push(temp);
     }
 
     // randX = iPixLoc(randomInt(COLS));
@@ -697,13 +731,13 @@ play.create = function()
     bmtScore = this.add.bitmapText((COLS+2) * CELL_SIZE - 147, 80, 'number-font', '0');
 
     this.add.image((COLS+2) * CELL_SIZE - 125, 180, 'succ13').setScale(0.12);
-    bmtSucc7 = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 180, 'number-font', 'X0');
+    bmtSucc13 = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 180, 'number-font', 'X0');
 
     this.add.image((COLS+2) * CELL_SIZE - 125, 300, 'succ4').setScale(0.2);
-    bmtSucc8 = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 300, 'number-font', 'X0');
+    bmtSucc4 = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 300, 'number-font', 'X0');
 
     this.add.image((COLS+2) * CELL_SIZE - 125, 425, 'succ3').setScale(0.12);
-    bmtSucc11 = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 425, 'number-font', 'X0');
+    bmtSucc3 = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 425, 'number-font', 'X0');
 
     this.add.image((COLS+2) * CELL_SIZE - 125, 555, 'star').setScale(0.1);
     bmtStar = this.add.bitmapText((COLS+2) * CELL_SIZE - 85, 555, 'number-font', 'X0');
@@ -850,35 +884,35 @@ play.update = function() {
     }
     bmtStar.setText('X' + starCount.toString());
 
-    for (var i = 0; i < succ7.length; i++) {
-        if (Math.abs(player.x - succ7[i].x) < 20  && Math.abs(player.y - succ7[i].y) < 20) {
-            succ7Count++;
-            score += 100;                                   // 100pt / succ7
-            succ7[i].x = iPixLoc(randomInt(COLS));
-            succ7[i].y = iPixLoc(randomInt(ROWS));
+    for (var i = 0; i < succ13.length; i++) {
+        if (Math.abs(player.x - succ13[i].x) < 20  && Math.abs(player.y - succ13[i].y) < 20) {
+            succ13Count++;
+            score += 100;                                   // 100pt / succ13
+            succ13[i].x = iPixLoc(randomInt(COLS));
+            succ13[i].y = iPixLoc(randomInt(ROWS));
         }
     }
-    bmtSucc7.setText('X' + succ7Count.toString());
+    bmtSucc13.setText('X' + succ13Count.toString());
 
-    for (var i = 0; i < succ8.length; i++) {
-        if (Math.abs(player.x - succ8[i].x) < 20  && Math.abs(player.y - succ8[i].y) < 20) {
-            succ8Count++;
-            score += 250;                                   // 250pt / succ8
-            succ8[i].x = iPixLoc(randomInt(COLS));
-            succ8[i].y = iPixLoc(randomInt(ROWS));
+    for (var i = 0; i < succ4.length; i++) {
+        if (Math.abs(player.x - succ4[i].x) < 20  && Math.abs(player.y - succ4[i].y) < 20) {
+            succ4Count++;
+            score += 250;                                   // 250pt / succ4
+            succ4[i].x = iPixLoc(randomInt(COLS));
+            succ4[i].y = iPixLoc(randomInt(ROWS));
         }
     }
-    bmtSucc8.setText('X' + succ8Count.toString());
+    bmtSucc4.setText('X' + succ4Count.toString());
 
-    for (var i = 0; i < succ11.length; i++) {
-        if (Math.abs(player.x - succ11[i].x) < 20  && Math.abs(player.y - succ11[i].y) < 20) {
-            succ11Count++;
-            score += 500;                                   // 500pt / succ11
-            succ11[i].x = iPixLoc(randomInt(COLS));
-            succ11[i].y = iPixLoc(randomInt(ROWS));
+    for (var i = 0; i < succ3.length; i++) {
+        if (Math.abs(player.x - succ3[i].x) < 20  && Math.abs(player.y - succ3[i].y) < 20) {
+            succ3Count++;
+            score += 500;                                   // 500pt / succ3
+            succ3[i].x = iPixLoc(randomInt(COLS));
+            succ3[i].y = iPixLoc(randomInt(ROWS));
         }
     }
-    bmtSucc11.setText('X' + succ11Count.toString());
+    bmtSucc3.setText('X' + succ3Count.toString());
 
     if (timerTorch > 0)
         timerTorch--;
@@ -932,7 +966,7 @@ var config = {
             debug: false
         }
     },
-    scene: [ win ]
+    scene: [ play, start, stop, win ]
 };
 
 var game = new Phaser.Game(config);
