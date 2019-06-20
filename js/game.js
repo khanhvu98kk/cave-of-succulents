@@ -19,7 +19,7 @@ var TIMER = 1000;
 
 var BABY_VEL = 150;
 var MONSTER_VEL = 100;
-var ENDX = 1400, ENDY = 930; 
+var ENDX = 1400, ENDY = 930;
 //---------------------------- Game constants -------------------------------
 //---------------------------- END -------------------------------
 
@@ -325,7 +325,6 @@ var succ1, succ2;
 var yDown = HEIGHT * 2/3;
 var yUp = HEIGHT * 1.8/3;
 
-console.log(yUp, yDown);
 start.preload = function () {
     this.load.image('start', 'assets/start.png');
     this.load.image('succ1', 'assets/succ1.png');
@@ -345,10 +344,6 @@ start.create = function () {
     this.add.image(WIDTH/2, HEIGHT/3 + 80, 'logo2').setScale(0.75);
     button = this.add.image(WIDTH/2, HEIGHT * 2/3, 'start').setScale(0.5);
     button.setInteractive();
-
-    // this.physics.enable(image, Phaser.Physics.ARCADE);
-    // image.body.velocity.x=150;
-    // console.log(succ1);
 };
 
 start.update = function() {
@@ -456,7 +451,7 @@ win.update = function() {
 // -------------------------------- END -------------------------------------
 
 var play = new Phaser.Scene('play');
-var player, monster;
+var player, monster, bubble;
 var monsterTarget = [];
 var score = 0;
 var bmtSucc7, bmtSucc8, bmtSucc11, bmtScore, bmtStar, bmtBomb, bmtTorch;
@@ -489,6 +484,7 @@ play.preload = function()
     this.load.image('succ11', 'assets/succ11.png');
     this.load.image('succ12', 'assets/succ12.png');
     this.load.image('succ13', 'assets/succ13.png');
+    this.load.image('bubble', 'assets/bubble.png');
     this.load.spritesheet('baby', 'assets/baby.png', { frameWidth: 32.5, frameHeight: 38 });
     this.load.spritesheet('wolf', 'assets/wolf.png', { frameWidth: 48, frameHeight: 35 });
 }
@@ -586,6 +582,8 @@ play.create = function()
     monster.setCollideWorldBounds(true);
     initTarget(monster, monsterTarget);
 
+    bubble = this.physics.add.sprite(player.x, player.y, 'bubble').setScale(0.3);
+    bubble.visible = false;
 
     blocker = this.add.image((COLS * CELL_SIZE)/2 - WALL_WIDTH, HEIGHT-(COLS * CELL_SIZE)/2 - WALL_WIDTH, 'blocker').setScale((COLS*CELL_SIZE)/ 450);
 
@@ -830,13 +828,17 @@ play.update = function() {
         timerStar--;
     else if (timerStar == 0){
         INVINCIBLE = false;
+        bubble.visible = false;
         console.log(INVINCIBLE);
         timerStar--;
     }
+    bubble.x = player.x;
+    bubble.y = player.y;
     for (var i = 0; i < star.length; i++) {
         if (Math.abs(player.x - star[i].x) < 20  && Math.abs(player.y - star[i].y) < 20) {
             starCount++;
             timerStar = TIMER;      // 500 units before not invincible anymore    // TODO: have some glow/visual indication
+            bubble.visible = true;
             INVINCIBLE = true;
             console.log(INVINCIBLE);
             star[i].x = iPixLoc(randomInt(COLS));
