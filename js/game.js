@@ -503,14 +503,15 @@ var play = new Phaser.Scene('play');
 var player, monster, bubble;
 var monsterTarget = [];
 var bmtSucc13, bmtSucc4, bmtSucc3, bmtStar, bmtBomb, bmtTorch, bmtScore;
-var timerTorch = 0, timerStar = 0;
+var timerTorch = 0, timerStar = 0, timerStep = 0;
+var walking = false;
 
 play.preload = function()
 {
     this.load.image('tiles', 'assets/desert_tiles.png');
-    this.load.tilemapTiledJSON('map', 'assets/desert-score.json');
-    this.load.image('number-font', 'assets/numbers.png');
-
+    this.load.tilemapTiledJSON('map', 'assets/desert-score.json');    // tiled background
+    this.load.image('number-font', 'assets/numbers.png');         // scoreboard font
+    this.load.audio('steps', 'assets/steps.mp3');                 // footstep sound
     this.load.image('sky', 'assets/sky.png');
     this.load.image('mask', 'assets/mask.png');
     this.load.image('flat', 'assets/flat3.png');
@@ -519,18 +520,8 @@ play.preload = function()
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('torch', 'assets/torch.png');
-    // this.load.image('succ1', 'assets/succ1.png');
-    // this.load.image('succ2', 'assets/succ2.png');
     this.load.image('succ3', 'assets/succ3.png');
     this.load.image('succ4', 'assets/succ4.png');
-    // this.load.image('succ5', 'assets/succ5.png');
-    // this.load.image('succ6', 'assets/succ6.png');
-    // this.load.image('succ7', 'assets/succ7.png');
-    // this.load.image('succ8', 'assets/succ8.png');
-    // this.load.image('succ9', 'assets/succ9.png');
-    // this.load.image('succ10', 'assets/succ10.png');
-    // this.load.image('succ11', 'assets/succ11.png');
-    // this.load.image('succ12', 'assets/succ12.png');
     this.load.image('succ13', 'assets/succ13.png');
     this.load.image('bubble', 'assets/bubble.png');
     this.load.spritesheet('baby', 'assets/baby.png', { frameWidth: 32.5, frameHeight: 38 });
@@ -542,6 +533,8 @@ play.create = function()
     var map = this.make.tilemap({key: 'map'});                  // desert background
     var tileset = map.addTilesetImage("Desert", "tiles");
     var layer = map.createStaticLayer('Ground', tileset, 0, 0);
+
+    this.sound.add('steps');
 
     walls = this.physics.add.staticGroup();
     initAdjacency();
@@ -589,34 +582,6 @@ play.create = function()
         var temp = this.physics.add.image(randX, randY, 'succ3').setScale(0.06);
         succ3.push(temp);
     }
-
-    // randX = iPixLoc(randomInt(COLS));
-    // randY = jPixLoc(randomInt(ROWS));
-    // succ3 = this.physics.add.image(randX, randY, 'succ3').setScale(0.07);
-    //
-    // randX = iPixLoc(randomInt(COLS));
-    // randY = jPixLoc(randomInt(ROWS));
-    // succ4 = this.physics.add.image(randX, randY, 'succ4').setScale(0.1);
-    //
-    // randX = iPixLoc(randomInt(COLS));
-    // randY = jPixLoc(randomInt(ROWS));
-    // succ5 = this.physics.add.image(randX, randY, 'succ5').setScale(0.2);
-    //
-    // randX = iPixLoc(randomInt(COLS));
-    // randY = jPixLoc(randomInt(ROWS));
-    // succ6 = this.physics.add.image(randX, randY, 'succ6').setScale(0.1);
-
-    // randX = iPixLoc(randomInt(COLS));
-    // randY = jPixLoc(randomInt(ROWS));
-    // succ9 = this.physics.add.image(randX, randY, 'succ9').setScale(1);
-    //
-    // randX = iPixLoc(randomInt(COLS));
-    // randY = jPixLoc(randomInt(ROWS));
-    // succ10 = this.physics.add.image(randX, randY, 'succ10').setScale(1);
-
-    // randX = iPixLoc(randomInt(COLS));
-    // randY = jPixLoc(randomInt(ROWS));
-    // succ12 = this.physics.add.image(randX, randY, 'succ12').setScale(1);
 
     // ------------------ adding randomly generated items ---------------------
     // --------------------------- START ----------------------------------
@@ -805,37 +770,47 @@ play.update = function() {
     {
         player.setVelocityX(-BABY_VEL);
         player.setVelocityY(0);
-
+        walking = true;
         player.anims.play('left', true);
     }
     else if (cursors.right.isDown)
     {
         player.setVelocityX(BABY_VEL);
         player.setVelocityY(0);
-
+        walking = true;
         player.anims.play('right', true);
     }
     else if (cursors.up.isDown)
     {
         player.setVelocityY(-BABY_VEL);
         player.setVelocityX(0);
-
+        walking = true;
         player.anims.play('up', true);
     }
     else if (cursors.down.isDown)
     {
         player.setVelocityY(BABY_VEL);
         player.setVelocityX(0);
-
+        walking = true;
         player.anims.play('down', true);
     }
     else
     {
         player.setVelocityX(0);
         player.setVelocityY(0);
-
+        walking = false;
         player.anims.play('turn');
     }
+    if (walking) {
+        if (timerStep <= 0) {
+            timerStep = 13;
+            this.sound.play('steps');
+        }
+        else {
+            timerStep--;
+        }
+    }
+
     // --------------------------  END ------------------------------
 
     // Move the Spotlight
