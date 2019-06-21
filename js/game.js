@@ -339,7 +339,7 @@ start.preload = function () {
     this.load.image('star', 'assets/star.png');
     this.load.image('torch', 'assets/torch.png');
     this.load.image('blocker', 'assets/blocker.png');
-    this.load.image('instructions', 'assets/instructions.png');
+    this.load.image('instructions', 'assets/instructions-min.png');
 };
 
 start.create = function () {
