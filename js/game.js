@@ -13,7 +13,7 @@ var ITEMS = 2;
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
 var SPOTLIGHT_SCALE = 1;
-var IS_DARK = false;
+var IS_DARK = true;
 var INVINCIBLE = false;
 var TIMER = 1000;
 
@@ -994,6 +994,7 @@ play.update = function() {
 
 var config = {
     type: Phaser.AUTO,
+    parent: '.game',
     width: WIDTH,
     height: HEIGHT,
     physics: {
@@ -1005,6 +1006,7 @@ var config = {
     },
     scene: [ play, start, stop, win ],
     scale: {
+        parent: '.game',
         mode: Phaser.Scale.FIT,
         width: WIDTH,
         height: HEIGHT
