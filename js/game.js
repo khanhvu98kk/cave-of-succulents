@@ -123,12 +123,6 @@ function isNeighbor (i, j, k, l) {
     return false;
 }
 
-function createBoxWall (i, j) {
-    var iLoc = iPixLoc(i + 0.5);
-    var jLoc = jPixLoc(j + 0.5);
-    walls.create(iLoc, jLoc, 'box').setScale(0.1).refreshBody();
-}
-
 function createWall (i, j, orient='tall') {
 
     if (orient=='tall') {
@@ -523,7 +517,6 @@ play.preload = function()
     this.load.audio('whine', 'assets/whine.mp3');
     this.load.audio('shiny', 'assets/shiny.mp3');
     this.load.audio('boom', 'assets/boom.mp3');
-    this.load.image('sky', 'assets/sky.png');
     this.load.image('mask', 'assets/mask.png');
     this.load.image('flat', 'assets/flat3.png');
     this.load.image('tall', 'assets/tall3.png');
