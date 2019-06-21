@@ -338,12 +338,17 @@ start.preload = function () {
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('torch', 'assets/torch.png');
+    this.load.image('blocker', 'assets/blocker.png');
+    this.load.image('instructions', 'assets/instructions.png');
 };
 
 start.create = function () {
     console.log(this.sys.settings.key, 'is alive');
     start.cameras.main.setBackgroundColor('#000000');
+    console.log(start.cameras.main)
+    console.log(this.cameras.main)
     // this.scene.bringToTop('stop');
+    blocker = this.add.image(WIDTH/2, HEIGHT/2, 'blocker').setScale(WIDTH/ 450);
     succ1 = this.add.image(WIDTH * 1/4, yUp, 'succ1').setScale(0.5);
     succ2 = this.add.image(WIDTH * 3/4, yDown, 'succ2').setScale(0.5);
     logo1 = this.add.image(WIDTH/2, HEIGHT/3 - 50, 'logo1').setScale(0.75);
@@ -368,25 +373,26 @@ start.update = function() {
           succ1.visible = false; // succ1.destroy(start);
           succ2.visible = false; // succ2.destroy(start);
           instrBtn.visible = false; // instrBtn.destroy(start);
-          this.add.text(50, 50, 'Little Red (or Blue) Riding Hood is stuck in a cave!').setScale(2);
-          this.add.text(50, 100, 'Help her solve this maze, and escape from the Big Bad Wolf.').setScale(2);
-          this.add.text(50, 150, 'On the way, collect these succulents for points and items for power-ups:').setScale(2);
+        //   this.add.text(50, 50, 'Little Red (or Blue) Riding Hood is stuck in a cave!').setScale(2);
+        //   this.add.text(50, 100, 'Help her solve this maze, and escape from the Big Bad Wolf.').setScale(2);
+        //   this.add.text(50, 150, 'On the way, collect these succulents for points and items for power-ups:').setScale(2);
 
-          this.add.image(200, 300, 'succ13').setScale(0.12);
-          this.add.text(300, 300, 'equals 100 pts').setScale(2);
-          this.add.image(900, 300, 'star').setScale(0.1);
-          this.add.text(1000, 275, 'makes invincible').setScale(2);
-          this.add.text(1000, 300, 'against Wolf').setScale(2);
+        //   this.add.image(200, 300, 'succ13').setScale(0.12);
+        //   this.add.text(300, 300, 'equals 100 pts').setScale(2);
+        //   this.add.image(900, 300, 'star').setScale(0.1);
+        //   this.add.text(1000, 275, 'makes invincible').setScale(2);
+        //   this.add.text(1000, 300, 'against Wolf').setScale(2);
 
-          this.add.image(200, 425, 'succ4').setScale(0.2);
-          this.add.text(300, 425, 'equals 200 pts').setScale(2);
-          this.add.image(900, 425, 'bomb').setScale(0.2);
-          this.add.text(1000, 425, 'blasts walls').setScale(2);
+        //   this.add.image(200, 425, 'succ4').setScale(0.2);
+        //   this.add.text(300, 425, 'equals 200 pts').setScale(2);
+        //   this.add.image(900, 425, 'bomb').setScale(0.2);
+        //   this.add.text(1000, 425, 'blasts walls').setScale(2);
 
-          this.add.image(200, 550, 'succ3').setScale(0.12);
-          this.add.text(300, 550, 'equals 200 pts').setScale(2);
-          this.add.image(900, 550, 'torch').setScale(0.2);
-          this.add.text(1000, 550, 'increases vision').setScale(2);
+        //   this.add.image(200, 550, 'succ3').setScale(0.12);
+        //   this.add.text(300, 550, 'equals 200 pts').setScale(2);
+        //   this.add.image(900, 550, 'torch').setScale(0.2);
+        //   this.add.text(1000, 550, 'increases vision').setScale(2);
+        this.add.image(WIDTH/2, HEIGHT/3, 'instructions').setScale(Math.min(HEIGHT/800, WIDTH/1800));
         });
     if (timer % 20 == 0) {
         if ((timer/20) % 2 == 0) {
@@ -431,7 +437,7 @@ stop.update = function() {
 
     button.on('pointerdown', () => {
           // console.log('pointerover');
-          window.location.reload();
+          document.location.reload(false);
           // this.scene.resume('start');
           // this.scene.pause('stop');
         });
