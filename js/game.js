@@ -321,7 +321,7 @@ function updateTarget (monster, monsterTarget) {
 var start = new Phaser.Scene('start');
 var button;
 var timer = 0;
-var succ1, succ2, logo1, logo2, succ13, succ3, succ4, torch, star, bomb;
+var succ1, succ2, logo1, logo2;
 var yDown = HEIGHT * 2 / 3;
 var yUp = HEIGHT * 1.8 /3;
 
@@ -353,19 +353,6 @@ start.create = function () {
     instrBtn.setInteractive();
     startBtn = this.add.image(WIDTH/2, HEIGHT * 2/3 + 50, 'start').setScale(0.5);
     startBtn.setInteractive();
-
-    succ13 = this.add.image(200, 300, 'succ13').setScale(0.12);
-    succ13.visible = false;
-    star = this.add.image(900, 300, 'star').setScale(0.1);
-    star.visible = false;
-    succ4 = this.add.image(200, 425, 'succ4').setScale(0.2);
-    succ4.visible = false;
-    bomb = this.add.image(900, 425, 'bomb').setScale(0.2);
-    bomb.visible = false;
-    succ3 = this.add.image(200, 550, 'succ3').setScale(0.12);
-    succ3.visible = false;
-    torch = this.add.image(900, 550, 'torch').setScale(0.2);
-    torch.visible = false; 
 };
 
 start.update = function() {
@@ -385,20 +372,20 @@ start.update = function() {
           this.add.text(50, 100, 'Help her solve this maze, and escape from the Big Bad Wolf.').setScale(2);
           this.add.text(50, 150, 'On the way, collect these succulents for points and items for power-ups:').setScale(2);
 
-          succ13.visible = true;
+          this.add.image(200, 300, 'succ13').setScale(0.12);
           this.add.text(300, 300, 'equals 100 pts').setScale(2);
-          star.visible = true;
+          this.add.image(900, 300, 'star').setScale(0.1);
           this.add.text(1000, 275, 'makes invincible').setScale(2);
           this.add.text(1000, 300, 'against Wolf').setScale(2);
 
-          succ4.visible = true;
+          this.add.image(200, 425, 'succ4').setScale(0.2);
           this.add.text(300, 425, 'equals 200 pts').setScale(2);
-          bomb.visible = true;
+          this.add.image(900, 425, 'bomb').setScale(0.2);
           this.add.text(1000, 425, 'blasts walls').setScale(2);
 
-          succ3.visible = true;
+          this.add.image(200, 550, 'succ3').setScale(0.12);
           this.add.text(300, 550, 'equals 200 pts').setScale(2);
-          torch.visible = true;
+          this.add.image(900, 550, 'torch').setScale(0.2);
           this.add.text(1000, 550, 'increases vision').setScale(2);
         });
     if (timer % 20 == 0) {
