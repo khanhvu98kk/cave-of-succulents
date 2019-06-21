@@ -342,7 +342,7 @@ start.preload = function () {
 
 start.create = function () {
     console.log(this.sys.settings.key, 'is alive');
-    start.cameras.main.setBackgroundColor('#000000')
+    start.cameras.main.setBackgroundColor('#000000');
     // this.scene.bringToTop('stop');
     succ1 = this.add.image(WIDTH * 1/4, yUp, 'succ1').setScale(0.5);
     succ2 = this.add.image(WIDTH * 3/4, yDown, 'succ2').setScale(0.5);
@@ -945,7 +945,7 @@ play.update = function() {
 // -------------------------- Play Scene ------------------------------
 // -------------------------------- END -------------------------------------
 
-
+// document.body.style.zoom="67%"
 
 var config = {
     type: Phaser.AUTO,
@@ -958,7 +958,12 @@ var config = {
             debug: false
         }
     },
-    scene: [ play, start, stop, win ]
+    scene: [ play, start, stop, win ],
+    scale: {
+        mode: Phaser.Scale.FIT,
+        width: WIDTH,
+        height: HEIGHT
+    },   
 };
 
 var game = new Phaser.Game(config);
