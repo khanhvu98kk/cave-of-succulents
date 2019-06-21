@@ -13,7 +13,7 @@ var ITEMS = 2;
 var SPOTLIGHT_SIZE = 200;
 var SPOTLIGHT_ORIG = 213;
 var SPOTLIGHT_SCALE = 1;
-var IS_DARK = true;
+var IS_DARK = false;
 var INVINCIBLE = false;
 var TIMER = 1000;
 
@@ -28,6 +28,7 @@ var walls;
 var wallsList = {};
 var cursors;
 var adjacency;
+var emptySpots;
 var star;
 var starCount = 0;
 var bomb;
@@ -45,17 +46,18 @@ var spotlight;
 // -------------------------- Helper Functions ------------------------------
 //---------------------------- START -------------------------------
 
+// ------------------------------ General -----------------------------------
 function two2one (i, j) {return (j*COLS) + i;}
 function one2i (one) {return one % COLS;}
 function one2j (one) {return Math.floor(one / COLS);}
 
 // PixLoc returns the center of the hall
-function iPixLoc (i) {return CELL_SIZE * i + (HALL_SIZE/2);}
-function jPixLoc (j) {return CELL_SIZE * j + (HALL_SIZE/2);}
+function iPixLoc (i) {return CELL_SIZE * i + (HALL_SIZE/2);} // index to pixel
+function jPixLoc (j) {return CELL_SIZE * j + (HALL_SIZE/2);} // index to pixel
 function iWallLocTall (i) {return iPixLoc(i) + (HALL_SIZE/2) + (WALL_WIDTH/2);}
 function jWallLocFlat (j) {return jPixLoc(j) + (HALL_SIZE/2) + (WALL_WIDTH/2);}
-function xPixInd (x) {return Math.floor(x / CELL_SIZE);}
-function yPixInd (y) {return Math.floor(y / CELL_SIZE);}
+function xPixInd (x) {return Math.floor(x / CELL_SIZE);} // pixel to index
+function yPixInd (y) {return Math.floor(y / CELL_SIZE);} // pixel to index
 
 function isValid (i, j) {return i >= 0 && i < COLS && j >= 0 && j < ROWS;}
 
@@ -66,6 +68,9 @@ function arrayRemove(arr, value) {
         return ele != value;
     });
 }
+
+
+// -------------------------------- Walls -----------------------------------
 
 // Adjacency matrix stores each cell as an integer
 // Each cell is an index in the array and has a neighbors array
@@ -259,6 +264,9 @@ function resetAll () {
     initTarget(monster, monsterTarget);
 }
 
+
+// --------------------------- Monster Movement -----------------------------
+
 // initialize monster target
 function initTarget (monster, monsterTarget) {
     var i = xPixInd(monster.x);
@@ -304,6 +312,49 @@ function updateTarget (monster, monsterTarget) {
     monsterTarget.yPrev = monsterTarget.y;
     monsterTarget.x = iPixLoc(one2i(newTarget));
     monsterTarget.y = jPixLoc(one2j(newTarget));
+}
+
+
+// ---------------------------- Item Spawning -------------------------------
+
+// intialize the empty spots
+function initEmptySpots () {
+    emptySpots = [];
+
+    for(var one = 1; one < ROWS*COLS-1; one++) {
+        emptySpots.push(one);
+    }
+}
+
+// Note: get empty spot BEFORE adding cleared spot
+// get random empty spot
+function getEmptySpot () {
+    var rand = randomInt(emptySpots.length);
+    // console.log(rand);
+    var one = emptySpots.splice(rand, 1);
+    // console.log(one);
+
+    var randX = iPixLoc(one2i(one));
+    var randY = jPixLoc(one2j(one));
+    // console.log([randX, randY]);
+
+    return [randX, randY];
+}
+
+// add empty spot
+function addEmptySpot (x, y) {
+    var i = xPixInd(x);
+    var j = yPixInd(y);
+    var one = two2one(i, j);
+    emptySpots.push(one);
+}
+
+// move item to new location
+function moveItem (item) {
+    var [randX, randY] = getEmptySpot();
+    addEmptySpot(item.x, item.y);
+    item.x = randX;
+    item.y = randY;
 }
 
 //---------------------------- Helper Functions ---------------------------------------
@@ -547,6 +598,7 @@ play.create = function()
 
     walls = this.physics.add.staticGroup();
     initAdjacency();
+    initEmptySpots();
 
     // create walls
     divide(0, 0, COLS, ROWS);
@@ -557,37 +609,37 @@ play.create = function()
     var randX, randY;
     star = [];
     for (var i = 0; i < ITEMS; i++) {
-        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        [randX, randY] = getEmptySpot();
         var temp = this.physics.add.image(randX, randY, 'star').setScale(0.05);
         star.push(temp);
     }
     bomb = [];
     for (var i = 0; i < ITEMS; i++) {
-        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        [randX, randY] = getEmptySpot();
         var temp = this.physics.add.image(randX, randY, 'bomb').setScale(0.13);
         bomb.push(temp);
     }
     torch = [];
     for (var i = 0; i < ITEMS; i++) {
-        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        [randX, randY] = getEmptySpot();
         var temp = this.physics.add.image(randX, randY, 'torch').setScale(0.13);
         torch.push(temp);
     }
     succ13 = [];
     for (var i = 0; i < ITEMS; i++) {
-        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        [randX, randY] = getEmptySpot();
         var temp = this.physics.add.image(randX, randY, 'succ13').setScale(0.06);
         succ13.push(temp);
     }
     succ4 = [];
     for (var i = 0; i < ITEMS; i++) {
-        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        [randX, randY] = getEmptySpot();
         var temp = this.physics.add.image(randX, randY, 'succ4').setScale(0.1);
         succ4.push(temp);
     }
     succ3 = [];
     for (var i = 0; i < ITEMS; i++) {
-        randX = iPixLoc(randomInt(COLS)); randY = jPixLoc(randomInt(ROWS));
+        [randX, randY] = getEmptySpot();
         var temp = this.physics.add.image(randX, randY, 'succ3').setScale(0.06);
         succ3.push(temp);
     }
@@ -827,7 +879,7 @@ play.update = function() {
     spotlight.x = player.x;
     spotlight.y = player.y;
 
-    // handling collision
+    // handling collisions
     // console.log(player.x, player.y);
     // console.log(monster.x, monster.y);
     if (Math.abs(player.x - ENDX) < 20 && Math.abs(player.y - ENDY) < 20) {
@@ -864,8 +916,7 @@ play.update = function() {
             bubble.visible = true;
             INVINCIBLE = true;
             console.log(INVINCIBLE);
-            star[i].x = iPixLoc(randomInt(COLS));
-            star[i].y = iPixLoc(randomInt(ROWS));
+            moveItem(star[i]);
         }
     }
     bmtStar.setText('X' + starCount.toString());
@@ -875,8 +926,7 @@ play.update = function() {
             this.sound.play('eating');
             succ13Count++;
             score += 100;                                   // 100pt / succ13
-            succ13[i].x = iPixLoc(randomInt(COLS));
-            succ13[i].y = iPixLoc(randomInt(ROWS));
+            moveItem(succ13[i]);
         }
     }
     bmtSucc13.setText('X' + succ13Count.toString());
@@ -886,8 +936,7 @@ play.update = function() {
             this.sound.play('eating');
             succ4Count++;
             score += 250;                                   // 250pt / succ4
-            succ4[i].x = iPixLoc(randomInt(COLS));
-            succ4[i].y = iPixLoc(randomInt(ROWS));
+            moveItem(succ4[i]);
         }
     }
     bmtSucc4.setText('X' + succ4Count.toString());
@@ -897,8 +946,7 @@ play.update = function() {
             this.sound.play('eating');
             succ3Count++;
             score += 500;                                   // 500pt / succ3
-            succ3[i].x = iPixLoc(randomInt(COLS));
-            succ3[i].y = iPixLoc(randomInt(ROWS));
+            moveItem(succ3[i]);
         }
     }
     bmtSucc3.setText('X' + succ3Count.toString());
@@ -918,8 +966,7 @@ play.update = function() {
             spotlight = spotlight.setScale(SPOTLIGHT_SCALE);
             timerTorch = TIMER;
             torchCount++;
-            torch[i].x = iPixLoc(randomInt(COLS));
-            torch[i].y = iPixLoc(randomInt(ROWS));
+            moveItem(torch[i]);
         }
     }
     bmtTorch.setText('X' + torchCount.toString());
@@ -932,8 +979,7 @@ play.update = function() {
             var y = yPixInd(bomb[i].y);
             blastWalls(x, y);
             bombCount++;
-            bomb[i].x = iPixLoc(randomInt(COLS));
-            bomb[i].y = iPixLoc(randomInt(ROWS));
+            moveItem(bomb[i]);
         }
     }
     bmtBomb.setText('X' + bombCount.toString());
