@@ -392,7 +392,7 @@ start.update = function() {
         //   this.add.text(300, 550, 'equals 200 pts').setScale(2);
         //   this.add.image(900, 550, 'torch').setScale(0.2);
         //   this.add.text(1000, 550, 'increases vision').setScale(2);
-        this.add.image(WIDTH/2, HEIGHT/3, 'instructions').setScale(Math.min(HEIGHT/800, WIDTH/1800));
+        this.add.image(WIDTH/2, HEIGHT/3, 'instructions').setScale(Math.min(HEIGHT/800, WIDTH/1800) * 5/6);
         });
     if (timer % 20 == 0) {
         if ((timer/20) % 2 == 0) {
