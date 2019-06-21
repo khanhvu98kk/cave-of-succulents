@@ -28,7 +28,6 @@ var walls;
 var wallsList = {};
 var cursors;
 var adjacency;
-var locations = [];
 var star;
 var starCount = 0;
 var bomb;
@@ -122,6 +121,12 @@ function isNeighbor (i, j, k, l) {
             return true;
     }
     return false;
+}
+
+function createBoxWall (i, j) {
+    var iLoc = iPixLoc(i + 0.5);
+    var jLoc = jPixLoc(j + 0.5);
+    walls.create(iLoc, jLoc, 'box').setScale(0.1).refreshBody();
 }
 
 function createWall (i, j, orient='tall') {
@@ -358,11 +363,11 @@ start.update = function() {
           this.scene.stop('start');
         });
     instrBtn.on('pointerdown', () => {
-          logo1.destroy(start);
-          logo2.destroy(start);
-          succ1.destroy(start);
-          succ2.destroy(start);
-          instrBtn.destroy(start);
+          logo1.visible = false; // logo1.destroy(start);
+          logo2.visible = false; // logo2.destroy(start);
+          succ1.visible = false; // succ1.destroy(start);
+          succ2.visible = false; // succ2.destroy(start);
+          instrBtn.visible = false; // instrBtn.destroy(start);
           this.add.text(50, 50, 'Little Red (or Blue) Riding Hood is stuck in a cave!').setScale(2);
           this.add.text(50, 100, 'Help her solve this maze, and escape from the Big Bad Wolf.').setScale(2);
           this.add.text(50, 150, 'On the way, collect these succulents for points and items for power-ups:').setScale(2);
