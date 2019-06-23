@@ -994,7 +994,7 @@ play.update = function() {
 
 var config = {
     type: Phaser.AUTO,
-    parent: '.game',
+    parent: 'game',
     width: WIDTH,
     height: HEIGHT,
     physics: {
@@ -1006,7 +1006,7 @@ var config = {
     },
     scene: [ play, start, stop, win ],
     scale: {
-        parent: '.game',
+        parent: 'game',
         mode: Phaser.Scale.FIT,
         width: WIDTH,
         height: HEIGHT
